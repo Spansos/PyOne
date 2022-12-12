@@ -1,0 +1,1 @@
+i = (lambda x: lambda: x)([5])

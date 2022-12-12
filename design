@@ -1,0 +1,32 @@
+variables:
+    type name value
+    ex:
+        int i 5
+        tuple spam (2, 5)
+
+    type can be most python classes
+
+funcs:
+    fun name arg1 arg2
+        fun or expres
+    
+    ret for return value, won't stop func
+    fun name arg1 arg2
+        ret fun
+        fun
+    
+    func can make func
+    fun name arg1 arg2
+        ret fun name arg1 arg2
+            ret fun
+
+    no var definitions inside function
+    this is error-worthy:
+        fun name arg1 arg2
+            var name value
+    
+expressions:
+    any and all expressions will be implemented as functions
+
+std funcs:
+    the family of names of ln[num] (such as ln2, ln5) is reserved

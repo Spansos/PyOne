@@ -1,0 +1,6 @@
+int i 5
+
+fun add num
+    num + 1
+
+add i
