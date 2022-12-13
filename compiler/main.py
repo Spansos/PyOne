@@ -1,12 +1,18 @@
 import sys
+import ast
+ast
+
 
 class Line:
     lines = []
-    def __init__(self, line,  linenr):
+    def __init__(self, line,  linenr, func=None):
         line = line.strip()
         self.words = line.split(' ')
         self.linenr = linenr
-        Line.lines.append(self)
+        if func:
+            func.lines.append(self)
+        else:
+            Line.lines.append(self)
     
     def left(self):
         return None
@@ -15,7 +21,7 @@ class Line:
         return None
 
 class Var(Line):
-    types = 
+    types = {'str', 'int', 'float', 'list', 'tuple', 'dict', 'set', 'bool'}
     vars = {}
     def __init__(self, line, linenr):
         super().__init__(line, linenr)
@@ -29,9 +35,15 @@ class Var(Line):
     def right(self):
         return f"(lambda x: lambda: x)({self.value})"
 
-class Fun:
-    pass
+    def call(self):
+        return f"{self.name}()[0]"
 
+class Fun(Line):
+    def __init__(self):
+        self.lines = []
+
+class FunCall():
+    pass
 
 # read in file
 # filename = sys.argv[-1]
