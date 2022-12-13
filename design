@@ -6,6 +6,10 @@ variables:
 
     type can be most python classes
 
+    compiles to:
+        name = (lambda x: lambda: x)([val])
+    such that name()[0] can be called to get the exact same reference to val
+
 funcs:
     fun name arg1 arg2
         fun or expres
