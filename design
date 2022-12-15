@@ -8,6 +8,8 @@ variables:
     
     get func is:
         getvar = lambda name: vars()[name]
+    just using var will call getvar
+
 
 func defs:
     fun name arg1 arg2
@@ -32,8 +34,8 @@ func defs:
     compiles to:
         name = lambda arg1, arg2, ...: (line1, line2, line3)[ret_index]
 
+
 expressions:
     any and all expressions will be implemented as functions
 
 std funcs:
-    the family of names of ln[num] (such as ln2, ln5) is reserved
