@@ -1,28 +1,28 @@
+datatypes:
+    int, float, str, and table (pythons dict or lua's
+    table, named after lua's, since they will be used like those)
+
+    int is a number without a decimal point,
+    float is a number with decimal point
+    str is characters
+    table is some numbers with indexes (standart indexes being 0, 1, 2, ...)
+
+
 variables:
-    there is a vars func that returns a list of dicts
-        vars = (lambda x: lambda: x)([{}, {}, {}, ...])
-    this is used for variables
-
-
-    set func is:
-        setvar = lambda name, value: vars().__setitem__(name, value)
-    
-
-    get func is:
-        getvar = lambda name: vars().__getitem__(name)
-    
+    there is a vars func that returns a dict
+        vars = (lambda x: lambda: x)([{}])
+    this dict contains all user-defined (and some not-user-defined) variables
 
     vars can be set with =:
         var = 2
     this will compile to set func
 
-
     vars can be called with their name:
         var2 = var1
-    var1 will compile to getvar(var1)
 
-
-
+    strings and tables can be indexed with . and []
+        table['a'] == table.a
+    
 
 func defs:
     fun name(arg1 arg2) {
@@ -32,37 +32,41 @@ func defs:
     }
 
     
-    ret for return value, won't stop func:
+    return to return value, stops func:
         fun name(arg1 arg2) {
-            ret value
+            return value
             line
         }
-    so line is still executed
+    so line is not executed
     
 
     func can make func:
-        fun name(arg1, arg2) {
-            ret fun name(arg1, arg2) {
-                ret value
+        fun name(arg1 arg2) {
+            return fun name(arg1 arg2) {
+                return value
             }
         }
-
-
-    scopes don't exist, so var definitions in function are still global:
-        fun name(arg1, arg2) {
-            variable = value
+    
+    funcs can be assigned to vars:
+        fun name(arg1 arg2) {
+            line1
+            line2
+            ...
         }
-    variable is global
+        var = name
+        var(val val)
 
 
-    compiles to:
-        vars().__setitem__(name, lambda: arg1, arg2, ...: (line1, line2, ...)[ret_index])
+    function bodys are in a new scope
+
+
+    a func compiled is (name, {'scope': {}, 'lines': (line1, line2, ...)}
 
 
 
 
 expressions:
-    =, +, -, /, //, %, <, > and some others if i feel like it will be implemented
+    =, +, -, /, //, %, <, >, <=, >= and some others if i feel like it will be implemented
     all other expressions will be made with functions
 
 
@@ -71,13 +75,10 @@ expressions:
 inaccessible std funcs:
     for funcs that will be in every program, but that shouldn't be used directly
 
-
-    vars = (lambda x: lambda: x)([{}, {}, {}, ...])
+    vars = (lambda x: lambda: x)([{}])
     setvar = lambda name, value: vars().__setitem__(name, value)
     getvar = lambda name: vars().__getitem__(name)
 
 
-
-
 accessible std funcs:
-    for funcs that can be used
+    all functions that python has for list, dict, set and maybe more will be added
