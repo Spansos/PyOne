@@ -1,41 +1,83 @@
 variables:
-    there is a vars func that returns a dict
-        vars = (lambda x: lambda: x)({})
+    there is a vars func that returns a list of dicts
+        vars = (lambda x: lambda: x)([{}, {}, {}, ...])
     this is used for variables
 
+
     set func is:
-        setvar = lambda name, value: (vars.__setitem__(name, value))
+        setvar = lambda name, value: vars().__setitem__(name, value)
     
+
     get func is:
-        getvar = lambda name: vars()[name]
-    just using var will call getvar
+        getvar = lambda name: vars().__getitem__(name)
+    
+
+    vars can be set with =:
+        var = 2
+    this will compile to set func
+
+
+    vars can be called with their name:
+        var2 = var1
+    var1 will compile to getvar(var1)
+
+
 
 
 func defs:
-    fun name arg1 arg2
-        fun
+    fun name(arg1 arg2) {
+        line1
+        line2
+        ...
+    }
+
     
     ret for return value, won't stop func:
-        fun name arg1 arg2
-            ret fun
-            fun
+        fun name(arg1 arg2) {
+            ret value
+            line
+        }
+    so line is still executed
     
-    func can make func:
-        fun name arg1 arg2
-            ret fun name arg1 arg2
-                ret 1
 
-    var definitions in function are still global
-    var name is global:
-        fun name arg1 arg2
-            var name value
+    func can make func:
+        fun name(arg1, arg2) {
+            ret fun name(arg1, arg2) {
+                ret value
+            }
+        }
+
+
+    scopes don't exist, so var definitions in function are still global:
+        fun name(arg1, arg2) {
+            variable = value
+        }
+    variable is global
 
 
     compiles to:
-        name = lambda arg1, arg2, ...: (line1, line2, line3)[ret_index]
+        vars().__setitem__(name, lambda: arg1, arg2, ...: (line1, line2, ...)[ret_index])
+
+
 
 
 expressions:
-    any and all expressions will be implemented as functions
+    =, +, -, /, //, %, <, > and some others if i feel like it will be implemented
+    all other expressions will be made with functions
 
-std funcs:
+
+
+
+inaccessible std funcs:
+    for funcs that will be in every program, but that shouldn't be used directly
+
+
+    vars = (lambda x: lambda: x)([{}, {}, {}, ...])
+    setvar = lambda name, value: vars().__setitem__(name, value)
+    getvar = lambda name: vars().__getitem__(name)
+
+
+
+
+accessible std funcs:
+    for funcs that can be used
