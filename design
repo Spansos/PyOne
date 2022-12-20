@@ -10,39 +10,41 @@ datatypes:
 
 variables:
     there is a vars func that returns a dict
-        vars = (lambda x: lambda: x)([{}])
-    this dict contains all user-defined (and some not-user-defined) variables
+        vars = (lambda x: lambda: x)({})
+    this dict contains all user-defined and std variables
 
     vars can be set with =:
         var = 2
     this will compile to set func
 
-    vars can be called with their name:
+    vars can be referenced with their name:
         var2 = var1
 
     strings and tables can be indexed with . and []
         table['a'] == table.a
+    
+    vars will be replaced by a scope path during compilation
+    var a in scope b will be stored like ('b', 'a') in vars
 
 
 func defs:
-    fun name(arg1 arg2) {
+    fun name(arg1, arg2) {
         line1
         line2
         ...
     }
 
 
-    return to return value, stops func:
-        fun name(arg1 arg2) {
-            return value
-            line
+    return to return value:
+        fun name() {
+            return 2
         }
-    so line is not executed
-
+        var = name()
+    var is equeal to 2
 
     func can make func:
-        fun name(arg1 arg2) {
-            return fun name(arg1 arg2) {
+        fun name(arg1, arg2) {
+            return fun r_fun() {
                 return value
             }
         }
@@ -56,29 +58,48 @@ func defs:
         var = name
         var(val val)
 
-
     function bodys are in a new scope
-
 
     a func compiled is (name, {'scope': {}, 'lines': (line1, line2, ...)}
 
 
+inaccessible std funcs & vars:
+    for funcs that will be in every program, but that shouldn't be used directly.
+    these won't be in vars, they will be added directly as global lambda funcs in
+    final python prog
+
+    vars = (lambda x: lambda: x)({})
+    setvar = lambda varpath, value: vars().__setitem__(varpath, value)
+    getvar = lambda varpath: vars().__getitem__(varpath)
+    linen = (lambda x: lambda: x)([0])
+    jumprel = lambda n: linen.__setitem__(0, linen[0]+n)
+    jumpabs = lambda n: linen.__setitem__(0, n)
 
 
 expressions:
-    =, +, -, /, //, %, <, >, <=, >= and some others if i feel like it will be implemented
-    all other expressions will be made with functions
-
-
-
-
-inaccessible std funcs:
-    for funcs that will be in every program, but that shouldn't be used directly
-
-    vars = (lambda x: lambda: x)([{}])
-    setvar = lambda name, value: vars().__setitem__(name, value)
-    getvar = lambda name: vars().__getitem__(name)
+    =, +, -, /, //, %, <, >, <=, >=, [] and some others if i feel like it will be implemented
+    with symbols all other expressions will be made with functions
 
 
 accessible std funcs:
     all functions that python has for list, dict, set and maybe more will be added
+
+
+running:
+    the function run and the variables linen and lines will be used for running things.
+    lines will hold all the lines of a program in a list [line1, line2, line3, ...].
+    linen will hold the index to the curent line (in a list, tuch that it is a reference, linen = [0]).
+
+    all lines will consist of two parts. The first being the what
+    the programmer has writen (such as i = i + 1), the second changing the linen.
+    the part that changes the linen will be done by calling inaccessible std funcs, namely
+    jumprel and jumpabs.
+
+    If statements, while statements for loops and function calls are implemented as
+    lines only containing the linen part of a line, with the condition given by
+    the programmer being a tertianary that decides how linen will change.
+    if (i < 2) {
+        j = 3
+    }
+    will be implemented such that 'if (i < 2)' is compiled to lambda: jumprel(1) if i < 2 else jumprel(2)
+    linen.__setitem__(0, linen[0]+1) will be made into an inaccessible std func
