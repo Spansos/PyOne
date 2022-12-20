@@ -22,7 +22,7 @@ variables:
 
     strings and tables can be indexed with . and []
         table['a'] == table.a
-    
+
 
 func defs:
     fun name(arg1 arg2) {
@@ -31,14 +31,14 @@ func defs:
         ...
     }
 
-    
+
     return to return value, stops func:
         fun name(arg1 arg2) {
             return value
             line
         }
     so line is not executed
-    
+
 
     func can make func:
         fun name(arg1 arg2) {
