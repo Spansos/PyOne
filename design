@@ -68,12 +68,10 @@ inaccessible std funcs & vars:
     these won't be in vars, they will be added directly as global lambda funcs in
     final python prog
 
-    vars = (lambda x: lambda: x)({})
-    setvar = lambda varpath, value: vars().__setitem__(varpath, value)
-    getvar = lambda varpath: vars().__getitem__(varpath)
-    linen = (lambda x: lambda: x)([0])
-    jumprel = lambda n: linen.__setitem__(0, linen[0]+n)
-    jumpabs = lambda n: linen.__setitem__(0, n)
+    vars = {}
+    setvar = lambda varpath, value: vars.__setitem__(varpath, value)
+    getvar = lambda varpath: vars.__getitem__(varpath)
+    linepath = [0]
 
 
 expressions:
@@ -87,19 +85,11 @@ accessible std funcs:
 
 running:
     the function run and the variables linen and lines will be used for running things.
+
     lines will hold all the lines of a program in a list [line1, line2, line3, ...].
-    linen will hold the index to the curent line (in a list, tuch that it is a reference, linen = [0]).
+    a function will also be a list of all its lines, automatically assigned to a var.
 
-    all lines will consist of two parts. The first being the what
-    the programmer has writen (such as i = i + 1), the second changing the linen.
-    the part that changes the linen will be done by calling inaccessible std funcs, namely
-    jumprel and jumpabs.
+    so a program with a fun def on line 2 would look like [line1, line2 (makes var of [funline1, funline2, ...]), line3, ...]
 
-    If statements, while statements for loops and function calls are implemented as
-    lines only containing the linen part of a line, with the condition given by
-    the programmer being a tertianary that decides how linen will change.
-    if (i < 2) {
-        j = 3
-    }
-    will be implemented such that 'if (i < 2)' is compiled to lambda: jumprel(1) if i < 2 else jumprel(2)
-    linen.__setitem__(0, linen[0]+1) will be made into an inaccessible std func
+    a var named linepath will hold the curently executing line number, and how we got there.
+    
