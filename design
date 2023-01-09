@@ -38,13 +38,6 @@ func defs:
         var = name()
     var is equeal to 2
 
-    return doesn't stop
-        fun name(table) {
-            return 0
-            table[0] = 2
-        }
-    still sets table[0] to 2
-
     func can make func:
         fun name(arg1, arg2) {
             return fun r_fun() {
@@ -69,19 +62,28 @@ func defs:
     a dict containing all local functions, and the second
     item is the parent scope, a tuple
     
-    lines is a tuple function in the form of
-    lambda *args: (add *args to local vars, line1, line2, line3)[index of return]
+    lines is a tuple of lines such as
+    (add args to local vars, line1, line2, line3)[index of return]
+    
+    a line is a lambda func of two parts. part one
+    is a func that updates the current line path, part two is the actual expression
+    a = 2 would become lambda: (jmp(1), setvar(scope, a, 2))
+
+    the global var _ will automatically be set to the last evaluated
+    line value. so actualy
+    a = 2 would become lambda: (jmp(1), setvar(main[0], '_', setvar(scope, a, 2)))
 
 
 inaccessible std funcs & vars:
-    for funcs that will be in every program, but that shouldn't be used directly.
-    these won't be in vars, they will be added directly as global lambda funcs in
+    for funcs & vars that will be in every program, but that shouldn't be used directly.
+    these won't be like normal vars, they will be added directly as global lambda funcs or variables in
     final python prog
 
-    run
-    setvar = lambda scope, name, value: 
-    getvar = lambda scope, name: 
-    linepath = [0]
+    run = lambda path, prog: prog[1][path[0]] if isinstance(path[0], int) else run(path[1:], prog[0][0][path[0]])
+    prog = (({'main': prog_as_func}, None), ())
+    setvar = lambda scope, name, value: scope[0].get(name, None)
+    getvar = lambda scope, name: scope[0][name] if name in scope[0] else getvar(scope[1], name)
+    linepath = [[main, 0]]
 
 
 expressions:
