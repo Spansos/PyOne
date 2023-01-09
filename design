@@ -15,16 +15,13 @@ variables:
 
     vars can be set with =:
         var = 2
-    this will compile to set func
+    this will compile to set func with proper scope
 
     vars can be referenced with their name:
         var2 = var1
 
     strings and tables can be indexed with . and []
         table['a'] == table.a
-    
-    vars will be replaced by a scope path during compilation
-    var a in scope b will be stored like ('b', 'a') in vars
 
 
 func defs:
@@ -34,13 +31,19 @@ func defs:
         ...
     }
 
-
     return to return value:
         fun name() {
             return 2
         }
         var = name()
     var is equeal to 2
+
+    return doesn't stop
+        fun name(table) {
+            return 0
+            table[0] = 2
+        }
+    still sets table[0] to 2
 
     func can make func:
         fun name(arg1, arg2) {
@@ -60,7 +63,14 @@ func defs:
 
     function bodys are in a new scope
 
-    a func compiled is (name, {'scope': {}, 'lines': (line1, line2, ...)}
+    a func compiled is (scope, lines)
+
+    scope is a tuple wherein the first item is
+    a dict containing all local functions, and the second
+    item is the parent scope, a tuple
+    
+    lines is a tuple function in the form of
+    lambda *args: (add *args to local vars, line1, line2, line3)[index of return]
 
 
 inaccessible std funcs & vars:
@@ -68,9 +78,9 @@ inaccessible std funcs & vars:
     these won't be in vars, they will be added directly as global lambda funcs in
     final python prog
 
-    vars = {}
-    setvar = lambda varpath, value: vars.__setitem__(varpath, value)
-    getvar = lambda varpath: vars.__getitem__(varpath)
+    run
+    setvar = lambda scope, name, value: 
+    getvar = lambda scope, name: 
     linepath = [0]
 
 
