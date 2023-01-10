@@ -1,9 +1,7 @@
-linepath = [['main', 0]]
-prog = (({'main': 2}, None), ())
+linepath = [[0], ['main', 2]]
+prog = (({}, None), ())
 
-def run(path, prog):
-    n_path = path[1:]
-    if isinstance(n_path[0], int):
-        
+
+run = lambda path, prog: prog[1][path[-1][0]]() if isinstance(path[-1][0], int) else run([*path[:-1], path[-1][1:]], prog[0][0][path[-1][0]])
 
 print(run(linepath, prog))

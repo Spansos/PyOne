@@ -83,7 +83,8 @@ inaccessible std funcs & vars:
     prog = (({'main': prog_as_func}, None), ())
     setvar = lambda scope, name, value: scope[0].get(name, None)
     getvar = lambda scope, name: scope[0][name] if name in scope[0] else getvar(scope[1], name)
-    linepath = [[main, 0]]
+    linepath = [[0]]
+    run = lambda path, prog: prog[1][path[-1][0]]() if isinstance(path[-1][0], int) else run([*path[:-1], path[-1][1:]], prog[0][0][path[-1][0]])
 
 
 expressions:
