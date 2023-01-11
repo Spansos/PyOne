@@ -15,7 +15,9 @@ TOKEN_TYPES = OrderedDict()
 TOKEN_TYPES['KEYWORD']      =   'fun|return|while|for|break|skip|if|else'
 TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z_][a-zA-Z0-9_]*'
 TOKEN_TYPES['LITERAL']      =   '([0-9]+(\.[0-9]*)?)|\'[^\'\n]*\'?|"[^"\n]*"?|true|false'
-TOKEN_TYPES['OPERATOR']     =   '(\+|-|\*|^|\/|\/\/|%|\||&|!|=|<|>)(=)?'
+TOKEN_TYPES['ASSIGNMENT']   =   '(\+|-|\*|^|\/|\/\/|%)?='
+TOKEN_TYPES['BIN_OPERATOR'] =   '\+|-|\*|^|\/|\/\/|%|\||&|(=|!)=|<|>'
+TOKEN_TYPES['UN_OPERATOR']  =   '!'
 TOKEN_TYPES['SEPERATOR']    =   '\[|\]|\(|\)|{|}|\n|,'
 TOKEN_TYPES['COMMENT']      =   '(#|\/\/).*'
 

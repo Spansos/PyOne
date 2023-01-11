@@ -1,5 +1,5 @@
 datatypes:
-    int, float, str, and table (pythons dict or lua's
+    bool, int, float, str, and table (pythons dict or lua's
     table, named after lua's, since they will be used like those)
 
     int is a number without a decimal point,
