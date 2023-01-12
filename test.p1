@@ -1,6 +1,6 @@
 fun name(arg1, arg2) {
-    return fun r_fun(){
-        foo = 2
-        return value == arg1 & !foo != arg2
+    return fun r_fun(){ # return a
+        foo = 2;         /* multiline
+        comment*/return value == arg1 & !foo != arg2 & "STRING";
     }
 }
