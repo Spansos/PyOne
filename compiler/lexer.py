@@ -13,29 +13,44 @@ class Token():
 
 TOKEN_TYPES = OrderedDict()
 
-# OVERLAP
-TOKEN_TYPES['KEYWORD']      =   'fun|return|while|for|break|skip|if|else'
-TOKEN_TYPES['BOOL']         =   'true|false'
-TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z_][a-zA-Z0-9_]*'
+# KEYWORDS
+TOKEN_TYPES['FUN']          =   'fun'
+TOKEN_TYPES['RETURN']       =   'return'
+TOKEN_TYPES['WHILE']        =   'while'
+TOKEN_TYPES['FOR']          =   'for'
+TOKEN_TYPES['BREAK']        =   'break'
+TOKEN_TYPES['SKIP']         =   'skip'
+TOKEN_TYPES['IF']           =   'if'
+TOKEN_TYPES['ELSE']         =   'else'
 # TYPES
 TOKEN_TYPES['INTEGER']      =   '[0-9]+'
 TOKEN_TYPES['FLOAT']        =   '([0-9]+\.[0-9]*)|\.[0-9]+'
 TOKEN_TYPES['STRING']       =   '".*"|\'.*\''
+TOKEN_TYPES['BOOL']         =   'true|false'
+# IDENTIFIER
+TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z_][a-zA-Z0-9_]*'
 # LOGICAL
 TOKEN_TYPES['COMPARISON']   =   '==|!=|>=|<=|>|<'
 TOKEN_TYPES['AND']          =   '&'
 TOKEN_TYPES['OR']           =   '|'
 TOKEN_TYPES['NOT']          =   '!'
-# OPERATORS
+# MATH SHIT
+TOKEN_TYPES['ASSIGNMENT']   =   '='
 TOKEN_TYPES['PLUS']         =   '\+'
 TOKEN_TYPES['MULT']         =   '\*'
 TOKEN_TYPES['POWER']        =   '\^'
 TOKEN_TYPES['DIVISION']     =   '\/'
 TOKEN_TYPES['INT_DIVISION'] =   '\/\/'
 TOKEN_TYPES['MODULUS']      =   '%'
-# DON'T KNOW
-TOKEN_TYPES['ASSIGNMENT']   =   '='
-TOKEN_TYPES['SEPERATOR']    =   '\[|\]|\(|\)|{|}|;|,|:'
+# SEPERATORS
+TOKEN_TYPES['SQUARE_OPEN']  =   '\['
+TOKEN_TYPES['SQUARE_CLOSE'] =   ']'
+TOKEN_TYPES['ROUND_OPEN']   =   '\('
+TOKEN_TYPES['ROUND_CLOSE']  =   '\)'
+TOKEN_TYPES['CURLY_OPEN']   =   '{'
+TOKEN_TYPES['CURLY_CLOSE']  =   '}'
+TOKEN_TYPES['SEMICOLON']    =   ';'
+TOKEN_TYPES['COMMA']        =   ','
 # IRRELEVANT
 TOKEN_TYPES['WHITESPACE']   =   ' +|\n+|\t+'
 TOKEN_TYPES['COMMENT']      =   '(#|\/\/).*|\/\*(.|\n)*\*\/'
