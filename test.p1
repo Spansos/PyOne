@@ -3,4 +3,4 @@ fun name(arg1, arg2) {
     return foo*2 == arg1 & !foo != arg2 & "STRING";
 }
 
-name(4, )
+name(4, false)

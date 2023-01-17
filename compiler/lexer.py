@@ -76,6 +76,6 @@ def lex(string):
         tokens.append(Token(match[0], match[1].group(0)))
         string = string[len(match[1].group(0)):]
     
-    tokens = [token for token in tokens if token.type != 'WHITESPACE' and token.type != 'COMMENT'][::-1]
+    tokens = [token for token in tokens if token.type != 'WHITESPACE' and token.type != 'COMMENT']
 
     return tokens
