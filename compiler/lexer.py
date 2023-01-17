@@ -32,7 +32,7 @@ TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z_][a-zA-Z0-9_]*'
 # LOGICAL
 TOKEN_TYPES['COMPARISON']   =   '==|!=|>=|<=|>|<'
 TOKEN_TYPES['AND']          =   '&'
-TOKEN_TYPES['OR']           =   '|'
+TOKEN_TYPES['OR']           =   '\|'
 TOKEN_TYPES['NOT']          =   '!'
 # MATH SHIT
 TOKEN_TYPES['ASSIGNMENT']   =   '='
@@ -51,6 +51,7 @@ TOKEN_TYPES['CURLY_OPEN']   =   '{'
 TOKEN_TYPES['CURLY_CLOSE']  =   '}'
 TOKEN_TYPES['SEMICOLON']    =   ';'
 TOKEN_TYPES['COMMA']        =   ','
+TOKEN_TYPES['ENDOFFILE']    =   '\Z'
 # IRRELEVANT
 TOKEN_TYPES['WHITESPACE']   =   ' +|\n+|\t+'
 TOKEN_TYPES['COMMENT']      =   '(#|\/\/).*|\/\*(.|\n)*\*\/'
@@ -61,9 +62,9 @@ for k, v in TOKEN_TYPES.items():
 
 
 def lex(string):
-
+    
     tokens = []
-    while string:
+    while (not tokens) or tokens[-1].type != 'ENDOFFILE':
 
         matches = OrderedDict()
         for k, v in TOKEN_TYPES.items():
@@ -75,6 +76,6 @@ def lex(string):
         tokens.append(Token(match[0], match[1].group(0)))
         string = string[len(match[1].group(0)):]
     
-    tokens = [token for token in tokens if token.type != 'WHITESPACE' and token.type != 'COMMENT']
+    tokens = [token for token in tokens if token.type != 'WHITESPACE' and token.type != 'COMMENT'][::-1]
 
     return tokens

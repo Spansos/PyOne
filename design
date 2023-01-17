@@ -1,3 +1,14 @@
+prog will be like:
+prog = lambda: ((var := 'value'), (fun := lambda: 2), print(fun(), var)
+prog()
+
+loops will be
+prog = labmda: ((_loop := [1]), lambda: (loop body), [_loop.append(1) for i in _loop if <cond>])
+
+------------------------
+    IGNORE ALL BELOW
+    DO JUST ABOVE
+------------------------
 datatypes:
     bool, int, float, str, and table (pythons dict or lua's
     table, named after lua's, since they will be used like those)
@@ -104,5 +115,7 @@ running:
 
     so a program with a fun def on line 2 would look like [line1, line2 (makes var of [funline1, funline2, ...]), line3, ...]
 
-    a var named linepath will hold the curently executing line number, and how we got there.
+    a var named linepath will hold the curently executing line number, and how we got there.\
+
+
     
