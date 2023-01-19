@@ -8,10 +8,9 @@
 
 # import timeit
 
-# def test(n):
-#     lst = [1]
-#     [lst.append(1) for i in lst if len(lst) < n]
-    # print(len(lst))
+lst = [1]
+[lst.append(1) for i in lst if len(lst) < 1000]
+print(len(lst))
 
 # test()
 
@@ -22,3 +21,4 @@
 #     (print(c)),
 #     )
 # )()
+

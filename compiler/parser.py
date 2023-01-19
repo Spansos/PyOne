@@ -3,7 +3,9 @@ import lexer
 def parseExpression(tokens):
     n_tokens, node = tokens.copy()[1:], []
 
-    
+    cur_bal = 0
+    rnd_bal = 0
+    sqr_bal = 0
 
     return n_tokens, node, False
 
