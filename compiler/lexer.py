@@ -30,12 +30,18 @@ TOKEN_TYPES['BOOL']         =   'true|false'
 # IDENTIFIER
 TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z_][a-zA-Z0-9_]*'
 # LOGICAL
-TOKEN_TYPES['COMPARISON']   =   '==|!=|>=|<=|>|<'
+TOKEN_TYPES['EQUALS']       =   '=='
+TOKEN_TYPES['NOT_EQUALS']   =   '!='
+TOKEN_TYPES['GREATER_EQUAL']=   '>='
+TOKEN_TYPES['LESSER_EQUAL'] =   '<='
+TOKEN_TYPES['GREATER']      =   '>'
+TOKEN_TYPES['LESSER']       =   '<'
 TOKEN_TYPES['AND']          =   '&'
 TOKEN_TYPES['OR']           =   '\|'
 TOKEN_TYPES['NOT']          =   '!'
-# MATH SHIT
+# STATEMENTs
 TOKEN_TYPES['ASSIGNMENT']   =   '='
+# OPERATORS
 TOKEN_TYPES['PLUS']         =   '\+'
 TOKEN_TYPES['MULT']         =   '\*'
 TOKEN_TYPES['POWER']        =   '\^'
