@@ -34,7 +34,7 @@ def parseFunCall(tokens):
     n_tokens, node = tokens.copy(), {}
 
     node['type'] = 'function_call'
-    node['expressions'] = []
+    node['args'] = []
     node['id']   =  n_tokens.pop().value
     
     if n_tokens.pop().type != 'ROUND_OPEN':
@@ -42,16 +42,16 @@ def parseFunCall(tokens):
     
     while n_tokens[-1].type != 'ROUND_CLOSE':
         n_tokens, expr, error = parseExpression(n_tokens)
+        if error: return tokens, None, True
         
-        node['expressions'].append(expr)
+        node['args'].append(expr)
 
         if n_tokens[-1].type == 'COMMA':
             n_tokens.pop()
-        elif n_tokens[-1].type != 'ROUND_CLOSE':
-            return tokens, None, True
-
-        if error or n_tokens[-1].type == 'ENDOFFILE':
-            return tokens, None, True
+        else:
+            break
+    if n_tokens.pop().type != 'ROUND_CLOSE':
+        return tokens, None, True
 
     return n_tokens, node, False
 
@@ -95,7 +95,7 @@ def parseExpression(tokens):
     
     sub_nodes = []
     next_is_val = True
-    while n_tokens[-1].type != 'ENDOFFILE':
+    while n_tokens and n_tokens[-1].type != 'ENDOFFILE':
         match n_tokens[-1].type:
             case 'CURLY_OPEN':
                 if not next_is_val:
@@ -152,16 +152,18 @@ def parseExpression(tokens):
                 if not sub_nodes:
                     return tokens, None, True
                 break
-    
+    print(sub_nodes)
+
     if len(sub_nodes) == 1:
         node = sub_nodes[0]
         return n_tokens, node, False
     
     for i, v in enumerate(sub_nodes):
         if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type == 'NOT':
-            sub_nodes[i] = {'type': 'not', 'value': v}
-    
-    for ops in (('NOT',), ('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUALS', 'LESSER_EQUALS', 'GREATER', 'LESSER'), ('AND', 'OR')):
+            sub_nodes[i] = {'type': 'not', 'value': sub_nodes.pop(i+1)}
+
+
+    for ops in (('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUALS', 'LESSER_EQUALS', 'GREATER', 'LESSER'), ('AND', 'OR')):
         i = 0
         while i < len(sub_nodes):
             if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type in ops:
@@ -171,13 +173,14 @@ def parseExpression(tokens):
     
     node = sub_nodes
     
+
     return n_tokens, node, False
 
 
 
 def parseBody(tokens):
     n_tokens, node = tokens.copy(), []
-    
+
     if n_tokens.pop().type != 'CURLY_OPEN':
         return tokens, None, False
 
@@ -202,7 +205,7 @@ def parseBody(tokens):
     
     error = False
     while body_tokens and not error:
-        body_tokens, body_node, error = parseStart(body_tokens)
+        body_tokens, body_node, error = parseStatement(body_tokens)
         node.append(body_node)
     if error:
         return tokens, None, True
@@ -213,56 +216,62 @@ def parseBody(tokens):
 def parseIf(tokens):
     n_tokens, node = tokens.copy(), {}
     
+    # print()
+    # print(tokens)
+
     if n_tokens.pop().type != 'IF':
+        # print(1)
         return tokens, None, True
     
-    n_tokens, expr, error = parseExpression(n_tokens)
-    if not error:
-        n_tokens, body, error = parseBody(n_tokens)
-    if not error:
-        else_ = None
-        if n_tokens and n_tokens[-1].type == 'ELSE':
-           n_tokens.pop()
-           n_tokens, else_, error = parseBody(n_tokens)
-    
+    n_tokens, node['expr'], error = parseExpression(n_tokens)
     if error:
+        # print(2)
         return tokens, None, True 
+    n_tokens, node['body'], error = parseBody(n_tokens)
+    if error:
+        # print(3)
+        return tokens, None, True
+
+    if n_tokens and n_tokens[-1].type == 'ELSE':
+        n_tokens.pop()
+        n_tokens, node['else_expr'], error = parseExpression(n_tokens)
+        if error:
+            # print(4)
+            return tokens, None, True
+        n_tokens, node['else_body'], error = parseBody(n_tokens)
+        if error:
+            # print(5)
+            return tokens, None, True
     
-    node = {'type': 'if', 'expression': expr, 'body': body, 'else': else_}
+    # print(6)
     return n_tokens, node, False
 
-def parseReturn(n_tokens):
+def parseReturn(tokens):
     n_tokens, node = tokens.copy(), {}
     
-    if n_tokens.pop().type != 'RETURN':
-        return tokens, None, True
+    if n_tokens.pop().type != 'RETURN': return tokens, None, True
     
     n_tokens, node, error = parseExpression(n_tokens)
-    
+    if error: return tokens, None, True
     
     return n_tokens, node, False
 
-def parseWhile(n_tokens):
+def parseWhile(tokens):
     n_tokens, node = tokens.copy(), {}
     return n_tokens, node, False
 
-def parseFor(n_tokens):
+def parseFor(tokens):
     n_tokens, node = tokens.copy(), {}
     return n_tokens, node, False
     
 
-def parseStatement(tokens):
+def parseLine(tokens):
     n_tokens, node = tokens.copy(), {}
     
-    n_tokens, node, error = parseIf(n_tokens)
-    if error:
-        n_tokens, node, error = parseReturn(n_tokens)
-    if error:
-        n_tokens, lhs, error = parseIndex(n_tokens)
+    n_tokens, lhs, error = parseIndex(n_tokens)
     if error:
         n_tokens, lhs, error = parseVar(n_tokens)
-    if error:
-        return tokens, None, True
+    if error: return tokens, None, True
     
     if n_tokens.pop().type == 'ASSIGNMENT':
         n_tokens, rhs, error = parseExpression(n_tokens)
@@ -317,13 +326,17 @@ def parseFunDef(tokens):
 
 
 
-def parseStart(tokens):
+def parseStatement(tokens):
     if not tokens or tokens[-1].type == 'ENDOFFILE':
         return tokens, None, 'END'
 
-    n_tokens, n_node, error = parseFunDef(tokens)
+    n_tokens, n_node, error = parseIf(tokens)
     if error:
-        n_tokens, n_node, error = parseStatement(tokens)
+        n_tokens, n_node, error = parseReturn(tokens)
+    if error:
+        n_tokens, n_node, error = parseFunDef(tokens)
+    if error:
+        n_tokens, n_node, error = parseLine(tokens)
     if error:
         return tokens, None, True
 
@@ -334,20 +347,20 @@ def parseStart(tokens):
 with open('test.p1') as file:
     string = file.read()
 
-tokens = lexer.lex(string)[::-1]    # reverse such that pop removes first token
+tokens_ = lexer.lex(string)[::-1]    # reverse such that pop removes first token
 
 
-prog = []
+prog_ = []
 while True:
-    tokens, node, error = parseStart(tokens)
-    if error == 'END':
+    tokens_, node_, error_ = parseStatement(tokens_)
+    if error_ == 'END':
         break
-    if error:
-        # print(f'ERROR:\n\tafter:\t{prog[-1]}\n\ttokens:\t{tokens[::-1]}')
+    if error_:
+        # print(f'ERROR:\n\tafter:\t{prog_[-1]}\n\ttokens:\t{tokens_[::-1]}')
         break
-    prog.append(node)
+    prog_.append(node_)
     
     
 import json
-print()
-print(json.dumps(prog, indent=4))
+# print()
+# print(json.dumps(prog_, indent=2))
