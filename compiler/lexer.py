@@ -39,10 +39,11 @@ TOKEN_TYPES['LESSER']       =   '<'
 TOKEN_TYPES['AND']          =   '&'
 TOKEN_TYPES['OR']           =   '\|'
 TOKEN_TYPES['NOT']          =   '!'
-# STATEMENTs
+# STATEMENTS
 TOKEN_TYPES['ASSIGNMENT']   =   '='
 # OPERATORS
 TOKEN_TYPES['PLUS']         =   '\+'
+TOKEN_TYPES['MINUS']        =   '\-'
 TOKEN_TYPES['MULT']         =   '\*'
 TOKEN_TYPES['POWER']        =   '\^'
 TOKEN_TYPES['DIVISION']     =   '\/'
@@ -56,6 +57,7 @@ TOKEN_TYPES['ROUND_CLOSE']  =   '\)'
 TOKEN_TYPES['CURLY_OPEN']   =   '{'
 TOKEN_TYPES['CURLY_CLOSE']  =   '}'
 TOKEN_TYPES['SEMICOLON']    =   ';'
+TOKEN_TYPES['COLON']        =   ':'
 TOKEN_TYPES['COMMA']        =   ','
 TOKEN_TYPES['ENDOFFILE']    =   '\Z'
 # IRRELEVANT

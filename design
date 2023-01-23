@@ -3,7 +3,7 @@ prog = lambda: ((var := 'value'), (fun := lambda: 2), print(fun(), var)
 prog()
 
 loops will be
-prog = labmda: ((_loop := [1]), lambda: (loop body), [_loop.append(1) for i in _loop if <cond>])
+prog = labmda: ((_loop := [1]), _body := lambda: (loop body), [(_body(), _loop.append(1)) for i in _loop if <cond>])
 
 ------------------------
     IGNORE ALL BELOW
