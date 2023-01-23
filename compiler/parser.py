@@ -205,7 +205,7 @@ def parseBody(tokens):
         body_tokens, body_node, error = parseStart(body_tokens)
         node.append(body_node)
     if error:
-        return tokens, node, True
+        return tokens, None, True
 
     return n_tokens, node, False
 
@@ -217,14 +217,29 @@ def parseIf(tokens):
         return tokens, None, True
     
     n_tokens, expr, error = parseExpression(n_tokens)
+    if not error:
+        n_tokens, body, error = parseBody(n_tokens)
+    if not error:
+        else_ = None
+        if n_tokens and n_tokens[-1].type == 'ELSE':
+           n_tokens.pop()
+           n_tokens, else_, error = parseBody(n_tokens)
     
-    print(expr)
-    # need to do the if thingies
+    if error:
+        return tokens, None, True 
     
+    node = {'type': 'if', 'expression': expr, 'body': body, 'else': else_}
     return n_tokens, node, False
 
 def parseReturn(n_tokens):
     n_tokens, node = tokens.copy(), {}
+    
+    if n_tokens.pop().type != 'RETURN':
+        return tokens, None, True
+    
+    n_tokens, node, error = parseExpression(n_tokens)
+    
+    
     return n_tokens, node, False
 
 def parseWhile(n_tokens):
@@ -239,14 +254,17 @@ def parseFor(n_tokens):
 def parseStatement(tokens):
     n_tokens, node = tokens.copy(), {}
     
-    
     n_tokens, node, error = parseIf(n_tokens)
+    if error:
+        n_tokens, node, error = parseReturn(n_tokens)
     if error:
         n_tokens, lhs, error = parseIndex(n_tokens)
     if error:
         n_tokens, lhs, error = parseVar(n_tokens)
+    if error:
+        return tokens, None, True
     
-    if not error and n_tokens.pop().type == 'ASSIGNMENT':
+    if n_tokens.pop().type == 'ASSIGNMENT':
         n_tokens, rhs, error = parseExpression(n_tokens)
         node = {'type': 'assignment', 'target': lhs, 'value': rhs}
     else:
@@ -292,7 +310,7 @@ def parseFunDef(tokens):
         if error or n_tokens[-1].type == 'ENDOFFILE':
             return tokens, None, True
     n_tokens.pop()
-
+    
     n_tokens, node['body'], error = parseBody(n_tokens)
     
     return n_tokens, node, False
@@ -325,7 +343,7 @@ while True:
     if error == 'END':
         break
     if error:
-        print(f'ERROR:\n\tafter:\t{prog[-1]}\n\ttokens:\t{tokens[::-1]}')
+        # print(f'ERROR:\n\tafter:\t{prog[-1]}\n\ttokens:\t{tokens[::-1]}')
         break
     prog.append(node)
     
