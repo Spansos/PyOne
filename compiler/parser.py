@@ -140,7 +140,16 @@ def parseExpression(tokens):
                 sub_nodes.append(sub_node)
                 next_is_val = False
 
-            case 'NOT'|'EQUALS'|'NOT_EQUALS'|'GREATER_EQUALS'|'LESSER_EQUALS'|'GREATER'|'LESSER'|'AND'|'OR'|'PLUS'|'MINUS'|'MULT'|'POWER'|'DIVISION'|'INT_DIVISION'|'MODULUS':
+            case 'NOT':
+                if not next_is_val:
+                    if not sub_nodes:
+                        return tokens, None, True
+                    break
+                sub_nodes.append(n_tokens.pop())
+                next_is_val = True
+                
+
+            case 'EQUALS'|'NOT_EQUALS'|'GREATER_EQUALS'|'LESSER_EQUALS'|'GREATER'|'LESSER'|'AND'|'OR'|'PLUS'|'MINUS'|'MULT'|'POWER'|'DIVISION'|'INT_DIVISION'|'MODULUS':
                 if next_is_val:
                     if not sub_nodes:
                         return tokens, None, True
@@ -152,7 +161,7 @@ def parseExpression(tokens):
                 if not sub_nodes:
                     return tokens, None, True
                 break
-    print(sub_nodes)
+            
 
     if len(sub_nodes) == 1:
         node = sub_nodes[0]
@@ -160,22 +169,22 @@ def parseExpression(tokens):
     
     for i, v in enumerate(sub_nodes):
         if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type == 'NOT':
-            sub_nodes[i] = {'type': 'not', 'value': sub_nodes.pop(i+1)}
+            sub_nodes[i] = {'op': 'NOT', 'value': sub_nodes.pop(i+1)}
 
 
     for ops in (('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUALS', 'LESSER_EQUALS', 'GREATER', 'LESSER'), ('AND', 'OR')):
         i = 0
         while i < len(sub_nodes):
             if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type in ops:
+                if i-1 < 0 or i+1 > len(sub_nodes)-1:
+                    return tokens, None, True
                 sub_nodes[i-1] = {'op': sub_nodes[i].type, 'rhs': sub_nodes.pop(i+1), 'lhs': sub_nodes.pop(i-1)}
             else:
                 i += 1
     
-    node = sub_nodes
+    node = sub_nodes[0]
     
-
     return n_tokens, node, False
-
 
 
 def parseBody(tokens):
@@ -205,7 +214,8 @@ def parseBody(tokens):
     
     error = False
     while body_tokens and not error:
-        body_tokens, body_node, error = parseStatement(body_tokens)
+        body_tokens, body_node, error = parseStart(body_tokens)
+        # print(body_tokens, '\n', body_node, '\n', error, '\n')
         node.append(body_node)
     if error:
         return tokens, None, True
@@ -214,7 +224,7 @@ def parseBody(tokens):
 
 
 def parseIf(tokens):
-    n_tokens, node = tokens.copy(), {}
+    n_tokens, node = tokens.copy(), {'type': 'if'}
     
     # print()
     # print(tokens)
@@ -234,10 +244,6 @@ def parseIf(tokens):
 
     if n_tokens and n_tokens[-1].type == 'ELSE':
         n_tokens.pop()
-        n_tokens, node['else_expr'], error = parseExpression(n_tokens)
-        if error:
-            # print(4)
-            return tokens, None, True
         n_tokens, node['else_body'], error = parseBody(n_tokens)
         if error:
             # print(5)
@@ -247,25 +253,56 @@ def parseIf(tokens):
     return n_tokens, node, False
 
 def parseReturn(tokens):
-    n_tokens, node = tokens.copy(), {}
+    n_tokens, node = tokens.copy(), {'type': 'return'}
     
-    if n_tokens.pop().type != 'RETURN': return tokens, None, True
-    
+    if n_tokens.pop().type != 'RETURN':
+        return tokens, None, True
+
     n_tokens, node, error = parseExpression(n_tokens)
-    if error: return tokens, None, True
+    if error or (n_tokens and n_tokens.pop().type != 'SEMICOLON'):
+        return tokens, None, True
     
     return n_tokens, node, False
 
 def parseWhile(tokens):
-    n_tokens, node = tokens.copy(), {}
+    n_tokens, node = tokens.copy(), {'type': 'while'}
+    
+    if n_tokens.pop().type != 'WHILE':
+        return tokens, None, True
+    
+    n_tokens, node['expr'], error = parseExpression(n_tokens)
+    if error:
+        return tokens, None, True
+    
+    n_tokens, node['body'], error = parseBody(n_tokens)
+    if error:
+        return tokens, None, True
+    
     return n_tokens, node, False
 
 def parseFor(tokens):
-    n_tokens, node = tokens.copy(), {}
+    n_tokens, node = tokens.copy(), {'type': 'for'}
+    
+    if n_tokens.pop().type != 'FOR':
+        return tokens, None, True
+
+    n_tokens, node['init'], error = parseStatement(n_tokens)
+    if error or n_tokens.pop().type != 'COMMA':
+        return tokens, None, True
+    n_tokens, node['condition'], error = parseExpression(n_tokens)
+    if error or n_tokens.pop().type != 'COMMA':
+        return tokens, None, True
+    n_tokens, node['repeat'], error = parseStatement(n_tokens)
+    if error:
+        return tokens, None, True
+    
+    n_tokens, node['body'], error = parseBody(n_tokens)
+    if error: return tokens, None, True
+    
     return n_tokens, node, False
     
 
-def parseLine(tokens):
+def parseStatement(tokens):
     n_tokens, node = tokens.copy(), {}
     
     n_tokens, lhs, error = parseIndex(n_tokens)
@@ -280,14 +317,24 @@ def parseLine(tokens):
         n_tokens = tokens.copy()
         n_tokens, node, error = parseExpression(n_tokens)
         
-    if n_tokens.pop().type != 'SEMICOLON':
-        error = True
     
     if error:
         return tokens, None, True
     
     return n_tokens, node, False
+
+
+def parseLine(tokens):
+    n_tokens, node = tokens.copy(), {}
     
+    n_tokens, node, error = parseStatement(n_tokens)
+    
+    if n_tokens.pop().type != 'SEMICOLON':
+        error = True
+        
+    if error: return tokens, None, True
+    
+    return n_tokens, node, False
     
 
 
@@ -326,11 +373,15 @@ def parseFunDef(tokens):
 
 
 
-def parseStatement(tokens):
+def parseStart(tokens):
     if not tokens or tokens[-1].type == 'ENDOFFILE':
         return tokens, None, 'END'
 
     n_tokens, n_node, error = parseIf(tokens)
+    if error:
+        n_tokens, n_node, error = parseWhile(tokens)
+    if error:
+        n_tokens, n_node, error = parseFor(tokens)
     if error:
         n_tokens, n_node, error = parseReturn(tokens)
     if error:
@@ -352,7 +403,7 @@ tokens_ = lexer.lex(string)[::-1]    # reverse such that pop removes first token
 
 prog_ = []
 while True:
-    tokens_, node_, error_ = parseStatement(tokens_)
+    tokens_, node_, error_ = parseStart(tokens_)
     if error_ == 'END':
         break
     if error_:
@@ -362,5 +413,5 @@ while True:
     
     
 import json
-# print()
-# print(json.dumps(prog_, indent=2))
+print()
+print(json.dumps(prog_, indent=2))

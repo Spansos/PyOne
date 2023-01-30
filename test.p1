@@ -1,13 +1,6 @@
-fun name(arg1, arg2) {
-    foo = 2;
-    if arg1 > arg2 & {9:1} {
-        name(arg1-foo, arg2);
-    }
-    else {
-        name(arg1, arg2-foo);
-    }
-
-    return foo*2 == arg1 & !foo != arg2 & "STRING";
+//while x < 9 {
+//    body();
+//}
+for i=0, i<9, i=i+1 {
+    body();
 }
-
-name(4, 9);
