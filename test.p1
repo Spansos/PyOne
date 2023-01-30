@@ -1,6 +1,2 @@
-//while x < 9 {
-//    body();
-//}
-for i=0, i<9, i=i+1 {
-    body();
-}
+a = 4;
+print(a);

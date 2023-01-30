@@ -97,6 +97,22 @@ def parseExpression(tokens):
     next_is_val = True
     while n_tokens and n_tokens[-1].type != 'ENDOFFILE':
         match n_tokens[-1].type:
+            case 'ROUND_OPEN':
+                if not next_is_val:
+                    if not sub_nodes:
+                        return tokens, None, True
+                    break
+                n_tokens.pop()
+
+                n_tokens, sub_node, error = parseExpression(n_tokens)
+                if error: return tokens, None, False
+
+                if n_tokens.pop().type != 'ROUND_CLOSE':
+                    return tokens, None, True
+
+                sub_nodes.append(sub_node)
+                next_is_val = False
+
             case 'CURLY_OPEN':
                 if not next_is_val:
                     if not sub_nodes:
@@ -308,15 +324,12 @@ def parseStatement(tokens):
     n_tokens, lhs, error = parseIndex(n_tokens)
     if error:
         n_tokens, lhs, error = parseVar(n_tokens)
-    if error: return tokens, None, True
-    
-    if n_tokens.pop().type == 'ASSIGNMENT':
+    if (not error) and (n_tokens.pop().type == 'ASSIGNMENT'):
         n_tokens, rhs, error = parseExpression(n_tokens)
         node = {'type': 'assignment', 'target': lhs, 'value': rhs}
     else:
         n_tokens = tokens.copy()
         n_tokens, node, error = parseExpression(n_tokens)
-        
     
     if error:
         return tokens, None, True
@@ -393,25 +406,17 @@ def parseStart(tokens):
 
     return n_tokens, n_node, False
 
-
-
-with open('test.p1') as file:
-    string = file.read()
-
-tokens_ = lexer.lex(string)[::-1]    # reverse such that pop removes first token
-
-
-prog_ = []
-while True:
-    tokens_, node_, error_ = parseStart(tokens_)
-    if error_ == 'END':
-        break
-    if error_:
-        # print(f'ERROR:\n\tafter:\t{prog_[-1]}\n\ttokens:\t{tokens_[::-1]}')
-        break
-    prog_.append(node_)
+def parse(tokens):
+    tokens = tokens[::-1]
     
+    prog = []
+    while True:
+        tokens, node, error = parseStart(tokens)
+        if error == 'END':
+            break
+        if error:
+            print(f'ERROR:\n\tafter:\t{prog[-1]}\n\ttokens:\t{tokens[::-1]}')
+            break
+        prog.append(node)
     
-import json
-print()
-print(json.dumps(prog_, indent=2))
+    return prog

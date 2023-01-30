@@ -28,7 +28,7 @@ TOKEN_TYPES['FLOAT']        =   '([0-9]+\.[0-9]*)|\.[0-9]+'
 TOKEN_TYPES['STRING']       =   '".*"|\'.*\''
 TOKEN_TYPES['BOOL']         =   'true|false'
 # IDENTIFIER
-TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z_][a-zA-Z0-9_]*'
+TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z][a-zA-Z0-9_]*'
 # LOGICAL
 TOKEN_TYPES['EQUALS']       =   '=='
 TOKEN_TYPES['NOT_EQUALS']   =   '!='
