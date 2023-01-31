@@ -149,8 +149,7 @@ def parseExpression(tokens):
                 token = n_tokens.pop()
                 sub_node = {}
                 
-                sub_node['type'] = 'literal'
-                sub_node['datatype'] = token.type
+                sub_node['type'] = token.type.lower()
                 sub_node['value'] = token.value
                 
                 sub_nodes.append(sub_node)
@@ -185,16 +184,17 @@ def parseExpression(tokens):
     
     for i, v in enumerate(sub_nodes):
         if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type == 'NOT':
-            sub_nodes[i] = {'op': 'NOT', 'value': sub_nodes.pop(i+1)}
+            sub_nodes[i] = {'type': 'not', 'value': sub_nodes.pop(i+1)}
 
 
     for ops in (('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUALS', 'LESSER_EQUALS', 'GREATER', 'LESSER'), ('AND', 'OR')):
         i = 0
         while i < len(sub_nodes):
+
             if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type in ops:
                 if i-1 < 0 or i+1 > len(sub_nodes)-1:
                     return tokens, None, True
-                sub_nodes[i-1] = {'op': sub_nodes[i].type, 'rhs': sub_nodes.pop(i+1), 'lhs': sub_nodes.pop(i-1)}
+                sub_nodes[i-1] = {'type': sub_nodes[i].type.lower(), 'rhs': sub_nodes.pop(i+1), 'lhs': sub_nodes.pop(i-1)}
             else:
                 i += 1
     
@@ -409,14 +409,14 @@ def parseStart(tokens):
 def parse(tokens):
     tokens = tokens[::-1]
     
-    prog = []
+    prog = {'type': 'prog', 'body': []}
     while True:
         tokens, node, error = parseStart(tokens)
         if error == 'END':
             break
         if error:
-            print(f'ERROR:\n\tafter:\t{prog[-1]}\n\ttokens:\t{tokens[::-1]}')
+            print(f'ERROR:\n\tprog:\t{prog}\n\ttokens:\t{tokens[::-1]}')
             break
-        prog.append(node)
+        prog['body'].append(node)
     
     return prog
