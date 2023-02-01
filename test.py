@@ -22,13 +22,13 @@
 #     )
 # )()
 
-tokens = ['val0', 'op3', 'val1', 'op1', 'val2', 'op2', 'val3', 0]
-for op in ('op1', 'op2', 'op3'):
-    i = 0
-    while i < len(tokens):
-        if tokens[i] == op:
-            tokens[i-1] = {'op': op, 'rhs': tokens.pop(i+1), 'lhs': tokens.pop(i-1)}
-        else:
-            i += 1
+# tokens = ['val0', 'op3', 'val1', 'op1', 'val2', 'op2', 'val3', 0]
+# for op in ('op1', 'op2', 'op3'):
+#     i = 0
+#     while i < len(tokens):
+#         if tokens[i] == op:
+#             tokens[i-1] = {'op': op, 'rhs': tokens.pop(i+1), 'lhs': tokens.pop(i-1)}
+#         else:
+#             i += 1
 
-print(tokens)
+# print(tokens)

@@ -1,7 +1,7 @@
-fun test(arg1, arg2) {
-    a = arg1*2;
-    b = a/arg2;
-    return b;
+x = 3;
+if x != 3 {
+    print('test');
 }
-
-print(test(3, 7));
+else {
+    print('test2');
+}
