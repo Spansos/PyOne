@@ -204,7 +204,7 @@ def parseExpression(tokens):
 
 
 def parseBody(tokens):
-    n_tokens, node = tokens.copy(), []
+    n_tokens, node = tokens.copy(), {'type': 'body', 'body':[]}
 
     if n_tokens.pop().type != 'CURLY_OPEN':
         return tokens, None, False
@@ -232,7 +232,7 @@ def parseBody(tokens):
     while body_tokens and not error:
         body_tokens, body_node, error = parseStart(body_tokens)
         # print(body_tokens, '\n', body_node, '\n', error, '\n')
-        node.append(body_node)
+        node['body'].append(body_node)
     if error:
         return tokens, None, True
 
@@ -274,7 +274,7 @@ def parseReturn(tokens):
     if n_tokens.pop().type != 'RETURN':
         return tokens, None, True
 
-    n_tokens, node, error = parseExpression(n_tokens)
+    n_tokens, node['value'], error = parseExpression(n_tokens)
     if error or (n_tokens and n_tokens.pop().type != 'SEMICOLON'):
         return tokens, None, True
     
@@ -409,7 +409,7 @@ def parseStart(tokens):
 def parse(tokens):
     tokens = tokens[::-1]
     
-    prog = {'type': 'prog', 'body': []}
+    prog = {'type': 'body', 'body': []}
     while True:
         tokens, node, error = parseStart(tokens)
         if error == 'END':

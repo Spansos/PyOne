@@ -4,13 +4,21 @@ import parser_
 def generate(node):
     string = ''
     match node['type']:
-        case 'prog':
+        case 'body':
             substrings = [generate(node) for node in node['body']]
             string = f"({','.join(substrings)})"
+        
+        case 'function_def':
+            argstr = ','.join([generate(arg) for arg in node['args']])
+            funcstr = f"(lambda {argstr}:{generate(node['body'])})"
+            string = f"({node['name']}:={funcstr})"
         
         case 'function_call':
             args = [generate(arg) for arg in node['args']]
             string = f"{node['id']}({','.join(args)})"
+        
+        case 'return':
+            pass
 
         case 'assignment':
             target = generate(node['target'])
