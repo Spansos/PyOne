@@ -3,6 +3,7 @@ import parser_
 
 def generate(node):
     string = ''
+    print(node)
     match node['type']:
         case 'body':
             sub_nodes = [generate(sub_node) for sub_node in node['body']]
