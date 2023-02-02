@@ -6,7 +6,7 @@ def generate(node):
     match node['type']:
         case 'body':
             sub_nodes = [generate(sub_node) for sub_node in node['body']]
-            string = f"({','.join(sub_nodes)})"
+            string = f"({' or '.join(sub_nodes)})"
         
         case 'function_def':
             argstr = ','.join([generate(arg) for arg in node['args']])
@@ -41,7 +41,7 @@ def generate(node):
         case 'assignment':
             target = generate(node['target'])
             value = generate(node['value'])
-            string = f"({target}:=({value}))"
+            string = f"({target}:=({value}), None)[1]"
 
         case 'table':
             keyvals = [(generate(key), generate(value)) for key, value in node['key-values']]
