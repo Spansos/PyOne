@@ -319,17 +319,17 @@ def parseFor(tokens):
     
 
 def parseStatement(tokens):
-    n_tokens, node = tokens.copy(), {}
+    n_tokens, node = tokens.copy(), {'type': 'statement'}
     
     n_tokens, lhs, error = parseIndex(n_tokens)
     if error:
         n_tokens, lhs, error = parseVar(n_tokens)
     if (not error) and (n_tokens.pop().type == 'ASSIGNMENT'):
         n_tokens, rhs, error = parseExpression(n_tokens)
-        node = {'type': 'assignment', 'target': lhs, 'value': rhs}
+        node['statement'] = {'type': 'assignment', 'target': lhs, 'value': rhs}
     else:
         n_tokens = tokens.copy()
-        n_tokens, node, error = parseExpression(n_tokens)
+        n_tokens, node['statement'], error = parseExpression(n_tokens)
     
     if error:
         return tokens, None, True

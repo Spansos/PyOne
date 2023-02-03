@@ -3,11 +3,15 @@ import parser_
 
 def generate(node):
     string = ''
-    print(node)
+    # print(node)
     match node['type']:
         case 'body':
             sub_nodes = [generate(sub_node) for sub_node in node['body']]
             string = f"({' or '.join(sub_nodes)})"
+        
+        case 'statement':
+            statement = generate(node['statement'])
+            string = f"({statement},None)[1]"
         
         case 'function_def':
             argstr = ','.join([generate(arg) for arg in node['args']])
@@ -24,25 +28,25 @@ def generate(node):
         case 'while':
             body = generate(node['body'])
             expr = generate(node['expr'])
-            string = f"(_loop:=[0],[(_loop.append(0),{body}) for i in _loop if{expr}])"
+            string = f"(_loop:=[0],_break:=False,[(_loop.append(0),{body}) for i in _loop if({expr}and(not _break))])"
         
         case 'for':
             body = generate(node['body'])
-            init = generate(node['init'])
+            init = f"(_loop:=[None],_break:=False,{generate(node['init'])})"
             condition = generate(node['condition'])
             repeat = generate(node['repeat'])
-            string = f"(_loop:=[0],{init},[(_loop.append(0),{body},{repeat}) for i in _loop if{condition}])"
+            string = f"({init}, [_loop.append({body},{repeat}) for i in _loop if({condition}and(not _break))])"
         
         case 'if':
             expr = generate(node['expr'])
             body = generate(node['body'])
             else_body = generate(node.get('else_body', {'type':'body', 'body':[]}))
-            string = f"({body} if {expr} else {else_body})"
+            string = f"({body}if{expr}else{else_body})"
 
         case 'assignment':
             target = generate(node['target'])
             value = generate(node['value'])
-            string = f"({target}:=({value}), None)[1]"
+            string = f"{target}:=({value})"
 
         case 'table':
             keyvals = [(generate(key), generate(value)) for key, value in node['key-values']]
