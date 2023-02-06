@@ -35,7 +35,7 @@ def parseFunCall(tokens):
 
     node['type'] = 'function_call'
     node['args'] = []
-    node['id']   =  n_tokens.pop().value
+    node['id']   =  '___'+n_tokens.pop().value
     
     if n_tokens.pop().type != 'ROUND_OPEN':
         return tokens, None, True
@@ -65,7 +65,7 @@ def parseVar(tokens):
         return tokens, None, True
 
     node['type'] = 'var'
-    node['id']   = token.value
+    node['id']   = '___'+token.value
 
     return n_tokens, node, False
 
@@ -73,15 +73,16 @@ def parseVar(tokens):
 
 def parseIndex(tokens):
     n_tokens, node = tokens.copy(), {}
+    node['type'] = 'index'
+
+    n_tokens, node['table'], error   = parseVar(n_tokens)
 
     if n_tokens.pop().type != 'SQUARE_OPEN':
         return tokens, None, True
 
-    node['type'] = 'index'
-    n_tokens, node['expression'], error   = parseExpression(n_tokens)
     if not error:
         n_tokens, node['index'], error = parseExpression(n_tokens)
-    
+
     if n_tokens.pop().type != 'SQUARE_CLOSE' or error:
         return tokens, None, True
 
@@ -275,7 +276,7 @@ def parseReturn(tokens):
         return tokens, None, True
 
     n_tokens, node['value'], error = parseExpression(n_tokens)
-    if error or (n_tokens and n_tokens.pop().type != 'SEMICOLON'):
+    if error or not n_tokens or n_tokens.pop().type != 'SEMICOLON':
         return tokens, None, True
     
     return n_tokens, node, False
@@ -316,7 +317,22 @@ def parseFor(tokens):
     if error: return tokens, None, True
     
     return n_tokens, node, False
-    
+
+def parseSkip(tokens):
+    n_tokens, node = tokens.copy(), {'type': 'skip'}
+
+    if n_tokens.pop().type == 'SKIP':
+        return n_tokens, node, False
+    else:
+        return tokens, None, True
+
+def parseBreak(tokens):
+    n_tokens, node = tokens.copy(), {'type': 'break'}
+
+    if n_tokens.pop().type == 'BREAK':
+        return n_tokens, node, False
+    else:
+        return tokens, None, True
 
 def parseStatement(tokens):
     n_tokens, node = tokens.copy(), {'type': 'statement'}
@@ -329,7 +345,11 @@ def parseStatement(tokens):
         node['statement'] = {'type': 'assignment', 'target': lhs, 'value': rhs}
     else:
         n_tokens = tokens.copy()
-        n_tokens, node['statement'], error = parseExpression(n_tokens)
+        n_tokens, node['statement'], error = parseBreak(n_tokens)
+        if error:
+            n_tokens, node['statement'], error = parseSkip(n_tokens)
+        if error:
+            n_tokens, node['statement'], error = parseExpression(n_tokens)
     
     if error:
         return tokens, None, True
@@ -343,6 +363,7 @@ def parseLine(tokens):
     n_tokens, node, error = parseStatement(n_tokens)
     
     if n_tokens.pop().type != 'SEMICOLON':
+        print(tokens)
         error = True
         
     if error: return tokens, None, True
@@ -360,7 +381,7 @@ def parseFunDef(tokens):
     if keyword_token.type != 'FUN' or name_token.type != 'IDENTIFIER':
         return tokens, None, True
     
-    node['name'] = name_token.value
+    node['name'] = "___"+name_token.value
     node['args'] = []
     
     if n_tokens.pop().type != 'ROUND_OPEN':

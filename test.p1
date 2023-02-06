@@ -1,3 +1,9 @@
-for i=0, i<10, i=i+1 {
-    print(i);
+fun main() {
+    nums = {0:1,1:1};
+    for i=0, i<10, i=i+1 {
+        size_ = size(nums);
+        append(nums, nums[size_-1]+nums[size_-2]);
+    }
+    print(nums);
 }
+main();

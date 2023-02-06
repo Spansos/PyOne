@@ -1,5 +1,6 @@
 import lexer
 import parser_
+import stdlib
 
 def generate(node):
     string = ''
@@ -9,33 +10,39 @@ def generate(node):
             string = f"({' or '.join(sub_nodes)})"
         
         case 'statement':
+            print(node['statement']['type'])
             statement = generate(node['statement'])
-            string = f"({statement},None)[1]"
+            string = f"{statement}"
         
         case 'function_def':
             argstr = ','.join([generate(arg) for arg in node['args']])
             funcstr = f"(lambda {argstr}:{generate(node['body'])})"
-            string = f"({node['name']}:={funcstr})"
+            string = f"({node['name']}:={funcstr},None)[1]"
         
         case 'function_call':
             args = [generate(arg) for arg in node['args']]
             string = f"{node['id']}({','.join(args)})"
 
         case 'return':
-            string='"_ret"'
+            string = f"(_return:={generate(node['value'])})"
         
         case 'while':
             body = generate(node['body'])
             expr = generate(node['expr'])
-            string = f"(_loop:=[0],_break:=False,[(_loop.append(0),{body}) for _ in _loop if({expr}and(not _break))])"
+            string = f"(_loop:=[0],_break:=False,[_loop.append({body}) for _ in _loop if{expr}and(not _break)])"
         
         case 'for':
-            node['body']['body'].append(node['repeat'])
-            while_ = generate({'type':'while', 'body':node['body'], 'expr':node['condition']})
-            
+            body = generate(node['body'])
             init = generate(node['init'])
-            
-            string = f"{init} or {while_}"
+            condition = generate(node['condition'])
+            repeat = generate(node['repeat'])
+            string = f"(_loop:=[0],_break:=False,{init},[_loop.append(({body},{repeat})) for _ in _loop if{condition}and(not _break)])"
+        
+        case 'break':
+            string = "(_break:=True)"
+        
+        case 'skip':
+            string = "(True)"
         
         case 'if':
             expr = generate(node['expr'])
@@ -46,12 +53,17 @@ def generate(node):
         case 'assignment':
             target = generate(node['target'])
             value = generate(node['value'])
-            string = f"{target}:=({value})"
+            string = f"({target}:=({value}), None)[1]"
 
         case 'table':
             keyvals = [(generate(key), generate(value)) for key, value in node['key-values']]
             keyvalstrs = [f"{key}:{value}" for key, value in keyvals]
             string = f"{{{','.join(keyvalstrs)}}}"
+        
+        case 'index':
+            table = generate(node['table'])
+            index = generate(node['index'])
+            string = f"(({table})[{index}])"
         
         case 'and':
             lhs = generate(node['lhs'])
@@ -150,4 +162,7 @@ with open('test.p1', 'r') as file:
     input = file.read()
 tokens = lexer.lex(input)
 ast = parser_.parse(tokens)
-print(generate(ast))
+code = f"({stdlib.stdlib},{generate(ast)})"
+
+with open('out.py', 'w') as file:
+    file.write(code)
