@@ -3,7 +3,6 @@ import parser_
 
 def generate(node):
     string = ''
-    # print(node)
     match node['type']:
         case 'body':
             sub_nodes = [generate(sub_node) for sub_node in node['body']]
@@ -28,14 +27,15 @@ def generate(node):
         case 'while':
             body = generate(node['body'])
             expr = generate(node['expr'])
-            string = f"(_loop:=[0],_break:=False,[(_loop.append(0),{body}) for i in _loop if({expr}and(not _break))])"
+            string = f"(_loop:=[0],_break:=False,[(_loop.append(0),{body}) for _ in _loop if({expr}and(not _break))])"
         
         case 'for':
-            body = generate(node['body'])
-            init = f"(_loop:=[None],_break:=False,{generate(node['init'])})"
-            condition = generate(node['condition'])
-            repeat = generate(node['repeat'])
-            string = f"({init}, [_loop.append({body},{repeat}) for i in _loop if({condition}and(not _break))])"
+            node['body']['body'].append(node['repeat'])
+            while_ = generate({'type':'while', 'body':node['body'], 'expr':node['condition']})
+            
+            init = generate(node['init'])
+            
+            string = f"{init} or {while_}"
         
         case 'if':
             expr = generate(node['expr'])
