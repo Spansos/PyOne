@@ -10,21 +10,23 @@ def generate(node):
             string = f"({' or '.join(sub_nodes)})"
         
         case 'statement':
-            print(node['statement']['type'])
             statement = generate(node['statement'])
-            string = f"{statement}"
+            if node['statement']['type'] in ():
+                string = f"{statement}"
+            else:
+                string = f"({statement}, None)[1]"
         
         case 'function_def':
             argstr = ','.join([generate(arg) for arg in node['args']])
             funcstr = f"(lambda {argstr}:{generate(node['body'])})"
-            string = f"({node['name']}:={funcstr},None)[1]"
+            string = f"(({node['name']}:={funcstr}), None)[1]"
         
         case 'function_call':
             args = [generate(arg) for arg in node['args']]
             string = f"{node['id']}({','.join(args)})"
 
         case 'return':
-            string = f"(_return:={generate(node['value'])})"
+            string = f"(_return:={generate(node['value'])}, True)[1]"
         
         case 'while':
             body = generate(node['body'])
@@ -36,7 +38,7 @@ def generate(node):
             init = generate(node['init'])
             condition = generate(node['condition'])
             repeat = generate(node['repeat'])
-            string = f"(_loop:=[0],_break:=False,{init},[_loop.append(({body},{repeat})) for _ in _loop if{condition}and(not _break)])"
+            string = f"(_loop:=[0],_break:=False,_return:=False,{init},[_loop.append(({body},({repeat} if((not _break)and(not _return)) else ()))) for _ in _loop if{condition}and(not _break)])"
         
         case 'break':
             string = "(_break:=True)"
@@ -53,7 +55,7 @@ def generate(node):
         case 'assignment':
             target = generate(node['target'])
             value = generate(node['value'])
-            string = f"({target}:=({value}), None)[1]"
+            string = f"({target}:={value})"
 
         case 'table':
             keyvals = [(generate(key), generate(value)) for key, value in node['key-values']]
