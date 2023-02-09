@@ -165,7 +165,7 @@ def parseExpression(tokens):
                 next_is_val = True
                 
 
-            case 'EQUALS'|'NOT_EQUALS'|'GREATER_EQUALS'|'LESSER_EQUALS'|'GREATER'|'LESSER'|'AND'|'OR'|'PLUS'|'MINUS'|'MULT'|'POWER'|'DIVISION'|'INT_DIVISION'|'MODULUS':
+            case 'EQUALS'|'NOT_EQUALS'|'GREATER_EQUAL'|'LESSER_EQUAL'|'GREATER'|'LESSER'|'AND'|'OR'|'PLUS'|'MINUS'|'MULT'|'POWER'|'DIVISION'|'INT_DIVISION'|'MODULUS':
                 if next_is_val:
                     if not sub_nodes:
                         return tokens, None, True

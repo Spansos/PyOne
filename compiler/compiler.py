@@ -6,7 +6,8 @@ def generate(node):
     string = ''
     match node['type']:
         case 'body':
-            sub_nodes = [generate(sub_node) for sub_node in node['body']]
+            sub_nodes = ['((_return:=[False, None]), None)[1]']
+            sub_nodes += [generate(sub_node) for sub_node in node['body']]
             string = f"({' or '.join(sub_nodes)})"
         
         case 'statement':
@@ -18,27 +19,29 @@ def generate(node):
         
         case 'function_def':
             argstr = ','.join([generate(arg) for arg in node['args']])
-            funcstr = f"(lambda {argstr}:{generate(node['body'])})"
-            string = f"(({node['name']}:={funcstr}), None)[1]"
+            funcstr = f"(lambda{' ' if argstr else ''}{argstr}:({generate(node['body'])},_return[0])[1])"
+            string = f"(({node['name']}:={funcstr}),None)[1]"
         
         case 'function_call':
             args = [generate(arg) for arg in node['args']]
-            string = f"{node['id']}({','.join(args)})"
+            string = f"({node['id']}({','.join(args)}))"
 
         case 'return':
-            string = f"(_return:={generate(node['value'])}, True)[1]"
+            string = f"(_return:=({generate(node['value'])}, True))"
         
         case 'while':
             body = generate(node['body'])
             expr = generate(node['expr'])
-            string = f"(_loop:=[0],_break:=False,[_loop.append({body}) for _ in _loop if{expr}and(not _break)])"
+            loop = f"(_loop:=[0],_break:=False,[(_loop.append(0),{body}) for _ in _loop if{expr}and(not _break)and(not _return[0])])"
+            string = f"({loop},_break:=False,_return if _return[0] else None)[2]"
         
         case 'for':
             body = generate(node['body'])
             init = generate(node['init'])
             condition = generate(node['condition'])
             repeat = generate(node['repeat'])
-            string = f"(_loop:=[0],_break:=False,_return:=False,{init},[_loop.append(({body},({repeat} if((not _break)and(not _return)) else ()))) for _ in _loop if{condition}and(not _break)])"
+            loop = f"(_loop:=[0],_break:=False,{init},[(_loop.append(0),{body},({repeat} if((not _break)and(not _return[0])) else None)) for _ in _loop if{condition}and(not _break)and(not _return[0])])"
+            string = f"({loop},_break:=False,_return if _return[0] else None)[2]"
         
         case 'break':
             string = "(_break:=True)"
@@ -87,12 +90,12 @@ def generate(node):
             rhs = generate(node['rhs'])
             string = f"({lhs}!={rhs})"
 
-        case 'greater_equals':
+        case 'greater_equal':
             lhs = generate(node['lhs'])
             rhs = generate(node['rhs'])
             string = f"({lhs}>={rhs})"
 
-        case 'lesser_equals':
+        case 'lesser_equal':
             lhs = generate(node['lhs'])
             rhs = generate(node['rhs'])
             string = f"({lhs}<={rhs})"
