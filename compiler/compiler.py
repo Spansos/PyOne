@@ -56,9 +56,15 @@ def generate(node):
             string = f"({body}if{expr}else{else_body})"
 
         case 'assignment':
-            target = generate(node['target'])
-            value = generate(node['value'])
-            string = f"({target}:={value})"
+            if node['target']['type'] == 'index':
+                id =    generate(node['target']['table'])
+                key =   generate(node['target']['index'])
+                value = generate(node['value'])
+                string = f"(dict.__setitem__({id},{key},{value}))"
+            else:
+                target = generate(node['target'])
+                value = generate(node['value'])
+                string = f"({target}:={value})"
 
         case 'table':
             keyvals = [(generate(key), generate(value)) for key, value in node['key-values']]
@@ -151,6 +157,12 @@ def generate(node):
         
         case 'var':
             string = node['id']
+        
+        case 'float':
+            string = node['value']
+        
+        case 'bool':
+            string = generate({'type':'integer', 'value': str(1 if node['value']=='true' else 0)})
 
         case 'string':
             string = node['value']
