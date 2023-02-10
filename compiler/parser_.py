@@ -188,7 +188,7 @@ def parseExpression(tokens):
             sub_nodes[i] = {'type': 'not', 'value': sub_nodes.pop(i+1)}
 
 
-    for ops in (('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUALS', 'LESSER_EQUALS', 'GREATER', 'LESSER'), ('AND', 'OR')):
+    for ops in (('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUAL', 'LESSER_EQUAL', 'GREATER', 'LESSER'), ('AND', 'OR')):
         i = 0
         while i < len(sub_nodes):
 
