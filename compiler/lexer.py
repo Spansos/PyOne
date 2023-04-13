@@ -25,7 +25,7 @@ TOKEN_TYPES['ELSE']         =   'else'
 # TYPES
 TOKEN_TYPES['INTEGER']      =   '[0-9]+'
 TOKEN_TYPES['FLOAT']        =   '([0-9]+\.[0-9]*)|\.[0-9]+'
-TOKEN_TYPES['STRING']       =   '".*"|\'.*\''
+TOKEN_TYPES['STRING']       =   '""(\\"|[^"\n])*[^\\]"|\'(\\\\\'|[^\'\n])*[^\\]\''
 TOKEN_TYPES['BOOL']         =   'true|false'
 # IDENTIFIER
 TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z][a-zA-Z0-9_]*'
@@ -59,10 +59,9 @@ TOKEN_TYPES['CURLY_CLOSE']  =   '}'
 TOKEN_TYPES['SEMICOLON']    =   ';'
 TOKEN_TYPES['COLON']        =   ':'
 TOKEN_TYPES['COMMA']        =   ','
-TOKEN_TYPES['ENDOFFILE']    =   '\Z'
 # IRRELEVANT
 TOKEN_TYPES['WHITESPACE']   =   ' +|\n+|\t+'
-TOKEN_TYPES['COMMENT']      =   '(#|\/\/).*|\/\*(.|\n)*\*\/'
+TOKEN_TYPES['COMMENT']      =   '#.*|\/\*(.|\n)*\*\/'
 TOKEN_TYPES['ERROR']        =   '.|\n'
 
 for k, v in TOKEN_TYPES.items():
@@ -72,7 +71,7 @@ for k, v in TOKEN_TYPES.items():
 def lex(string):
     
     tokens = []
-    while (not tokens) or tokens[-1].type != 'ENDOFFILE':
+    while string:
 
         matches = OrderedDict()
         for k, v in TOKEN_TYPES.items():
