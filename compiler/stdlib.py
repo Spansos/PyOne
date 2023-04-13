@@ -31,7 +31,7 @@ stdlib = ('('
     'lambda _dict:'
         '{i:k for i,k in enumerate(_dict.keys())},'
 
-# appends value to list. will be a shit if _dict is not list
+# appends value to list. will be a shit if _dict is not ordered like a list
 '___append:='
     'lambda _dict,_item:'
         '(dict.__setitem__(_dict,len(_dict),_item))'
