@@ -13,7 +13,7 @@ class Token():
         self.end = end
     
     def __repr__(self):
-        return f"<{self.type}:{repr(self.value)}> at {self.start}-{self.end}"
+        return f"<{self.type}:{repr(self.value)}>@{self.start}-{self.end}"
 
 
 TOKEN_TYPES = OrderedDict()
