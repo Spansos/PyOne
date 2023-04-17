@@ -3,12 +3,17 @@ import re
 
 
 class Token():
-    def __init__(self, type: str, value: str):
+    def __init__(self, type: str, value: str, program: str, start: int, end: int):
+        # for actual parsing
         self.type = type
         self.value = value
+        # for 'nice' errors
+        self.program = program
+        self.start = start
+        self.end = end
     
     def __repr__(self):
-        return f"<{self.type}:{repr(self.value)}>"
+        return f"<{self.type}:{repr(self.value)}> at {self.start}-{self.end}"
 
 
 TOKEN_TYPES = OrderedDict()
@@ -24,8 +29,8 @@ TOKEN_TYPES['IF']           =   'if'
 TOKEN_TYPES['ELSE']         =   'else'
 # TYPES
 TOKEN_TYPES['INTEGER']      =   '[0-9]+'
-TOKEN_TYPES['FLOAT']        =   '([0-9]+\.[0-9]*)|\.[0-9]+'
-TOKEN_TYPES['STRING']       =   '""(\\"|[^"\n])*[^\\]"|\'(\\\\\'|[^\'\n])*[^\\]\''
+TOKEN_TYPES['FLOAT']        =   '[0-9]+\.[0-9]*|\.[0-9]+'
+TOKEN_TYPES['STRING']       =   '"(?:\\\\"|[^"\n])*[^\\\\]"|\'(?:\\\\\'|[^\\\'\n])*[^\\\\]\''
 TOKEN_TYPES['BOOL']         =   'true|false'
 # IDENTIFIER
 TOKEN_TYPES['IDENTIFIER']   =   '[a-zA-Z][a-zA-Z0-9_]*'
@@ -68,21 +73,35 @@ for k, v in TOKEN_TYPES.items():
     TOKEN_TYPES[k] = re.compile(v)
 
 
-def lex(string):
-    
+# creates a string of tokens for a given program
+def lex(program: str):
+
+    pos = 0
     tokens = []
-    while string:
+    while pos < len(program) and (not tokens or tokens[-1].type != 'ERROR'):
 
-        matches = OrderedDict()
-        for k, v in TOKEN_TYPES.items():
-            match = re.match(v, string)
-            if match:
-                matches[k] = match
-        match = max(matches.items(), key=lambda item: len(item[1].group(0)))
+        # determine all tokens that the next bit of code might be
+        matches = []
+        for type, pattern in TOKEN_TYPES.items():
+            match = pattern.match(program, pos)
+            if not match: continue
 
-        tokens.append(Token(match[0], match[1].group(0)))
-        string = string[len(match[1].group(0)):]
+            token = Token(
+                    type    =   type,
+                    value   =   match.group(),
+                    program =   program,
+                    start   =   match.start(),
+                    end     =   match.end()-1
+            )
+            matches.append(token)
+        
+        # add the largest token (the token that has the largest capture group) to list
+        # and set pos to the end of that token
+        token = max(matches, key=lambda item: item.end)
+        tokens.append(token)
+        pos = token.end + 1
     
+    # remove tokens that will be ignored by the parser
     tokens = [token for token in tokens if token.type != 'WHITESPACE' and token.type != 'COMMENT']
 
     return tokens

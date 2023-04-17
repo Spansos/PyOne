@@ -1,1 +1,1 @@
-str.
+(while_:=type('while_', (), dict(__init__=(lambda self: self.__setattr__('stop', False)), __iter__=(lambda self:self), __next__=(lambda self: (_ for _ in ()).throw(StopIteration()) if self.stop else 1))), while__:=while_(), a:=0, [(a:=a+1, while__.__setattr__('stop', True)) for i in while__])

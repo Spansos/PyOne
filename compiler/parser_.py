@@ -1,438 +1,100 @@
-import lexer
+from lexer import Token
 
+class Node:
+    def __init__(self, type: str, sub_nodes: list['Node']=None):
+        self.type = type
+        self.sub_nodes = sub_nodes
+
+
+
+class Error:
+    def __init__(self, message: str, bad_token: Token):
+        self.message = message
+        self.token = bad_token
+    
+    def __repr__(self):
+        # calc on which line
+        lines = self.token.program.split('\n')
+        line_num = len(lines)
+        # calc where in that line
+        prev_lines_len = sum([len(line) for line in lines[:line_num]])
+        start = self.token.start-prev_lines_len
+        # make and return string
+        return f"{self.message} @ line {line_num}, char {start}"
 
 
 def parseTable(tokens):
     n_tokens, node = tokens.copy(), {'type': 'table', 'key-values': []}
-    
-    if n_tokens.pop().type != 'CURLY_OPEN':
-        return tokens, None, True
-
-    while True:
-        n_tokens, key, error = parseExpression(n_tokens)
-        if error: return tokens, None, True
-        
-        if n_tokens.pop().type != 'COLON':
-            return tokens, None, True
-        
-        n_tokens, value, error = parseExpression(n_tokens)
-        if error: return tokens, None, True
-        
-        node['key-values'].append((key, value))
-        
-        token = n_tokens.pop()
-        if token.type == 'CURLY_CLOSE':
-            break
-        if token.type != 'COMMA':
-            return tokens, None, True
-    
     return n_tokens, node, False
-
-
 
 def parseFunCall(tokens):
     n_tokens, node = tokens.copy(), {}
-
-    node['type'] = 'function_call'
-    node['args'] = []
-    node['id']   =  '___'+n_tokens.pop().value
-    
-    if n_tokens.pop().type != 'ROUND_OPEN':
-        return tokens, None, True
-    
-    while n_tokens[-1].type != 'ROUND_CLOSE':
-        n_tokens, expr, error = parseExpression(n_tokens)
-        if error: return tokens, None, True
-        
-        node['args'].append(expr)
-
-        if n_tokens[-1].type == 'COMMA':
-            n_tokens.pop()
-        else:
-            break
-    if n_tokens.pop().type != 'ROUND_CLOSE':
-        return tokens, None, True
-
     return n_tokens, node, False
 
 
 
 def parseVar(tokens):
     n_tokens, node = tokens.copy(), {}
-
-    token = n_tokens.pop()
-    if token.type != 'IDENTIFIER':
-        return tokens, None, True
-
-    node['type'] = 'var'
-    node['id']   = '___'+token.value
-
     return n_tokens, node, False
 
 
 
 def parseIndex(tokens):
     n_tokens, node = tokens.copy(), {}
-    node['type'] = 'index'
-
-    n_tokens, node['table'], error   = parseVar(n_tokens)
-
-    if n_tokens.pop().type != 'SQUARE_OPEN':
-        return tokens, None, True
-
-    if not error:
-        n_tokens, node['index'], error = parseExpression(n_tokens)
-
-    if n_tokens.pop().type != 'SQUARE_CLOSE' or error:
-        return tokens, None, True
-
     return n_tokens, node, False
 
 
 
 def parseExpression(tokens):
-    n_tokens, node = tokens.copy(), {}
-    node['type'] = 'expression'
-    
-    sub_nodes = []
-    next_is_val = True
-    while n_tokens and n_tokens[-1].type != 'ENDOFFILE':
-        match n_tokens[-1].type:
-            case 'ROUND_OPEN':
-                if not next_is_val:
-                    if not sub_nodes:
-                        return tokens, None, True
-                    break
-                n_tokens.pop()
-
-                n_tokens, sub_node, error = parseExpression(n_tokens)
-                if error: return tokens, None, False
-
-                if n_tokens.pop().type != 'ROUND_CLOSE':
-                    return tokens, None, True
-
-                sub_nodes.append(sub_node)
-                next_is_val = False
-
-            case 'CURLY_OPEN':
-                if not next_is_val:
-                    if not sub_nodes:
-                        return tokens, None, True
-                    break
-                
-                n_tokens, sub_node, error = parseTable(n_tokens)
-                if error: return tokens, None, False
-                
-                sub_nodes.append(sub_node)
-                next_is_val = False
-
-            case 'IDENTIFIER':
-                if not next_is_val:
-                    if not sub_nodes:
-                        return tokens, None, True
-                    break
-                n_tokens, sub_node, error = parseFunCall(n_tokens)
-                if error:
-                    n_tokens, sub_node, error = parseIndex(n_tokens)
-                if error:
-                    n_tokens, sub_node, error = parseVar(n_tokens)
-                if error:
-                    return tokens, None, True
-                
-                sub_nodes.append(sub_node)
-                next_is_val = False
-            
-            case 'INTEGER'|'FLOAT'|'STRING'|'BOOL':
-                if not next_is_val:
-                    if not sub_nodes:
-                        return tokens, None, True
-                    break
-                token = n_tokens.pop()
-                sub_node = {}
-                
-                sub_node['type'] = token.type.lower()
-                sub_node['value'] = token.value
-                
-                sub_nodes.append(sub_node)
-                next_is_val = False
-
-            case 'NOT':
-                if not next_is_val:
-                    if not sub_nodes:
-                        return tokens, None, True
-                    break
-                sub_nodes.append(n_tokens.pop())
-                next_is_val = True
-                
-
-            case 'EQUALS'|'NOT_EQUALS'|'GREATER_EQUAL'|'LESSER_EQUAL'|'GREATER'|'LESSER'|'AND'|'OR'|'PLUS'|'MINUS'|'MULT'|'POWER'|'DIVISION'|'INT_DIVISION'|'MODULUS':
-                if next_is_val:
-                    if not sub_nodes:
-                        return tokens, None, True
-                    break
-                sub_nodes.append(n_tokens.pop())
-                next_is_val = True
-
-            case _:
-                if not sub_nodes:
-                    return tokens, None, True
-                break
-            
-
-    if len(sub_nodes) == 1:
-        node = sub_nodes[0]
-        return n_tokens, node, False
-    
-    for i, v in enumerate(sub_nodes):
-        if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type == 'NOT':
-            sub_nodes[i] = {'type': 'not', 'value': sub_nodes.pop(i+1)}
-
-
-    for ops in (('POWER',), ('MULT', 'DIVISION', 'INT_DIVISION', 'MODULUS'), ('PLUS', 'MINUS'), ('EQUALS', 'NOT_EQUALS', 'GREATER_EQUAL', 'LESSER_EQUAL', 'GREATER', 'LESSER'), ('AND', 'OR')):
-        i = 0
-        while i < len(sub_nodes):
-
-            if isinstance(sub_nodes[i], lexer.Token) and sub_nodes[i].type in ops:
-                if i-1 < 0 or i+1 > len(sub_nodes)-1:
-                    return tokens, None, True
-                sub_nodes[i-1] = {'type': sub_nodes[i].type.lower(), 'rhs': sub_nodes.pop(i+1), 'lhs': sub_nodes.pop(i-1)}
-            else:
-                i += 1
-    
-    node = sub_nodes[0]
-    
+    n_tokens, node = tokens.copy(), {'type':'expression'}
     return n_tokens, node, False
 
 
 def parseBody(tokens):
     n_tokens, node = tokens.copy(), {'type': 'body', 'body':[]}
-
-    if n_tokens.pop().type != 'CURLY_OPEN':
-        return tokens, None, False
-
-    body_tokens = []
-
-    curly_bal = 1
-    while curly_bal != 0:
-        match (token := n_tokens.pop()).type:
-            case 'CURLY_OPEN':
-                curly_bal += 1
-                if curly_bal:
-                    body_tokens.append(token)
-            case 'CURLY_CLOSE':
-                curly_bal -= 1
-                if curly_bal:
-                    body_tokens.append(token)
-            case 'ENDOFFILE':
-                return tokens, None, True
-            case _:
-                body_tokens.append(token)
-    body_tokens = body_tokens[::-1]
-    
-    error = False
-    while body_tokens and not error:
-        body_tokens, body_node, error = parseStart(body_tokens)
-        # print(body_tokens, '\n', body_node, '\n', error, '\n')
-        node['body'].append(body_node)
-    if error:
-        return tokens, None, True
-
     return n_tokens, node, False
 
 
 def parseIf(tokens):
     n_tokens, node = tokens.copy(), {'type': 'if'}
-    
-    # print()
-    # print(tokens)
-
-    if n_tokens.pop().type != 'IF':
-        # print(1)
-        return tokens, None, True
-    
-    n_tokens, node['expr'], error = parseExpression(n_tokens)
-    if error:
-        # print(2)
-        return tokens, None, True 
-    n_tokens, node['body'], error = parseBody(n_tokens)
-    if error:
-        # print(3)
-        return tokens, None, True
-
-    if n_tokens and n_tokens[-1].type == 'ELSE':
-        n_tokens.pop()
-        n_tokens, node['else_body'], error = parseBody(n_tokens)
-        if error:
-            # print(5)
-            return tokens, None, True
-    
-    # print(6)
     return n_tokens, node, False
 
 def parseReturn(tokens):
     n_tokens, node = tokens.copy(), {'type': 'return'}
-    
-    if n_tokens.pop().type != 'RETURN':
-        return tokens, None, True
-
-    n_tokens, node['value'], error = parseExpression(n_tokens)
-    if error or not n_tokens or n_tokens.pop().type != 'SEMICOLON':
-        return tokens, None, True
-    
     return n_tokens, node, False
 
 def parseWhile(tokens):
     n_tokens, node = tokens.copy(), {'type': 'while'}
-    
-    if n_tokens.pop().type != 'WHILE':
-        return tokens, None, True
-    
-    n_tokens, node['expr'], error = parseExpression(n_tokens)
-    if error:
-        return tokens, None, True
-    
-    n_tokens, node['body'], error = parseBody(n_tokens)
-    if error:
-        return tokens, None, True
-    
     return n_tokens, node, False
 
 def parseFor(tokens):
     n_tokens, node = tokens.copy(), {'type': 'for'}
-    
-    if n_tokens.pop().type != 'FOR':
-        return tokens, None, True
-
-    n_tokens, node['init'], error = parseStatement(n_tokens)
-    if error or n_tokens.pop().type != 'COMMA':
-        return tokens, None, True
-    n_tokens, node['condition'], error = parseExpression(n_tokens)
-    if error or n_tokens.pop().type != 'COMMA':
-        return tokens, None, True
-    n_tokens, node['repeat'], error = parseStatement(n_tokens)
-    if error:
-        return tokens, None, True
-    
-    n_tokens, node['body'], error = parseBody(n_tokens)
-    if error: return tokens, None, True
-    
     return n_tokens, node, False
 
 def parseSkip(tokens):
     n_tokens, node = tokens.copy(), {'type': 'skip'}
-
-    if n_tokens.pop().type == 'SKIP':
-        return n_tokens, node, False
-    else:
-        return tokens, None, True
+    return n_tokens, node, False
 
 def parseBreak(tokens):
     n_tokens, node = tokens.copy(), {'type': 'break'}
-
-    if n_tokens.pop().type == 'BREAK':
-        return n_tokens, node, False
-    else:
-        return tokens, None, True
+    return n_tokens, node, False
 
 def parseStatement(tokens):
     n_tokens, node = tokens.copy(), {'type': 'statement'}
-    
-    n_tokens, lhs, error = parseIndex(n_tokens)
-    if error:
-        n_tokens, lhs, error = parseVar(n_tokens)
-    if (not error) and (n_tokens.pop().type == 'ASSIGNMENT'):
-        n_tokens, rhs, error = parseExpression(n_tokens)
-        node['statement'] = {'type': 'assignment', 'target': lhs, 'value': rhs}
-    else:
-        n_tokens = tokens.copy()
-        n_tokens, node['statement'], error = parseBreak(n_tokens)
-        if error:
-            n_tokens, node['statement'], error = parseSkip(n_tokens)
-        if error:
-            n_tokens, node['statement'], error = parseExpression(n_tokens)
-    
-    if error:
-        return tokens, None, True
-    
     return n_tokens, node, False
-
-
-def parseLine(tokens):
-    n_tokens, node = tokens.copy(), {}
-    
-    n_tokens, node, error = parseStatement(n_tokens)
-    
-    if n_tokens.pop().type != 'SEMICOLON':
-        print(tokens)
-        error = True
-        
-    if error: return tokens, None, True
-    
-    return n_tokens, node, False
-    
 
 
 def parseFunDef(tokens):
     n_tokens, node = tokens.copy(), {'type': 'function_def'}
-
-    keyword_token = n_tokens.pop()
-    name_token = n_tokens.pop()
-    
-    if keyword_token.type != 'FUN' or name_token.type != 'IDENTIFIER':
-        return tokens, None, True
-    
-    node['name'] = "___"+name_token.value
-    node['args'] = []
-    
-    if n_tokens.pop().type != 'ROUND_OPEN':
-        return tokens, None, True
-
-    while n_tokens[-1].type != 'ROUND_CLOSE':
-        n_tokens, var, error = parseVar(n_tokens)
-
-        node['args'].append(var)
-
-        if n_tokens[-1].type == 'COMMA':
-            n_tokens.pop()
-        elif n_tokens[-1].type != 'ROUND_CLOSE':
-            return tokens, None, True
-
-        if error or n_tokens[-1].type == 'ENDOFFILE':
-            return tokens, None, True
-    n_tokens.pop()
-    
-    n_tokens, node['body'], error = parseBody(n_tokens)
-    
     return n_tokens, node, False
 
 
-
-def parseStart(tokens):
-    if not tokens or tokens[-1].type == 'ENDOFFILE':
-        return tokens, None, 'END'
-
-    n_tokens, n_node, error = parseIf(tokens)
-    if error:
-        n_tokens, n_node, error = parseWhile(tokens)
-    if error:
-        n_tokens, n_node, error = parseFor(tokens)
-    if error:
-        n_tokens, n_node, error = parseReturn(tokens)
-    if error:
-        n_tokens, n_node, error = parseFunDef(tokens)
-    if error:
-        n_tokens, n_node, error = parseLine(tokens)
-    if error:
-        return tokens, None, True
-
-    return n_tokens, n_node, False
-
-def parse(tokens):
+def parseProgram(tokens):
     tokens = tokens[::-1]
     
     prog = {'type': 'body', 'body': []}
     while True:
-        tokens, node, error = parseStart(tokens)
+        tokens, node, error = parseStatement(tokens)
         if error == 'END':
             break
         if error:
@@ -441,3 +103,10 @@ def parse(tokens):
         prog['body'].append(node)
     
     return prog
+
+
+from lexer import lex
+import json
+
+with open('test.p1') as file:
+    print(json.dumps(parseProgram(lex(file.read())), indent=1))
