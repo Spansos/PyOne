@@ -9,29 +9,40 @@ loops will be
     DO JUST ABOVE
 ------------------------
 datatypes:
-    bool, int, float, str, and table (pythons dict or lua's
+    bool
+    true and false compile to 1 and 0, respectively
+
+    int
+    any number lacking a decimal point is an int (eg, 0, 25, -6)
+    
+    float
+    number with decimal point (eg, 1.5, .8, 1.)
+    
+    string
+    a string is a bit of text, made by putting characters between single or
+    double qoutes ('lorup epson', "-salt is delicious").
+    you can disable a quote with \. this is useful for strings with a ' or " in them (eg, "")
+     and table (pythons dict or lua's
     table, named after lua's, since they will be used like those)
 
     int is a number without a decimal point,
     float is a number with decimal point
     str is characters
-    table is some numbers with indexes (standart indexes being 0, 1, 2, ...)
+    table is some numbers with indexes (standard indexes being 0, 1, 2, ...)
 
 
 variables:
-    there is a vars func that returns a dict
-        vars = (lambda x: lambda: x)({})
-    this dict contains all user-defined and std variables
-
-    vars can be set with =:
+    vars can be set with =
         var = 2
-    this will compile to set func with proper scope
 
     vars can be referenced with their name:
         var2 = var1
 
-    strings and tables can be indexed with . and []
-        table['a'] == table.a
+    the way to get the value of a table is with a std func
+        item = get_item(dict, key)
+    
+    strings can be turned into tables and vice versa
+        {}
 
 
 func defs:
