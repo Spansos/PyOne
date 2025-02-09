@@ -1,0 +1,4 @@
+multiple suffixes no work - func(a)[1] or two_d_array[0][1] do not a do the it
+
+all loopes secretely have | b added to their expression (so if x<2, then actually (x<2)|b). b is set at start of loop, when set it is to break from loop
+same deal with r, except on function level for return. Also, is tuple of return value. Tuple is for truthy value

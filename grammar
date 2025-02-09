@@ -1,0 +1,21 @@
+expression = comparison ((AND|OR) expression)?
+comparison = addition ((EQUALS|NOT_EQUALS|GREATER_EQUAL|LESSER_EQUAL|GREATER|LESSER) comparison)?
+addition = multiplication ((PLUS|MINUS) addition)?
+multiplication = power ((MULT|DIVISION|MODULUS) multiplication)?
+power = prefix | (prefix POWER power)
+prefix = ((MINUS|PLUS|NOT) prefix) | postfix
+postfix = (primary (BRACKET_OPEN (expression (COMMA expression)*)? BRACKET_CLOSE))* | (primary (SQR_BRACKET_OPEN expression SQR_BRACKET_CLOSE)*)
+primary = INT | FLOAT | STRING | INDENTIFIER | (BRACKET_OPEN expression BRACKET_CLOSE)
+
+type = (MUT? REF? type) | IDENTIFIER
+assignment = IDENTIFIER ASSIGN expression
+declaration = type assignment
+while = WHILE BRACKET_OPEN expression BRACKET_CLOSE statement
+for = FOR BRACKET_OPEN statement expression SEMICOLON statement BRACKET_CLOSE statement
+if = IF BRACKET_OPEN expression BRACKET_CLOSE statement (ELSE statement)?
+function = FUNCTION type IDENTIFIER BRACKET_OPEN (type IDENTIFIER (COMMA type IDENTIFIER)*)? statement
+block = CURLY_BRACKET_OPEN statement* CURLY_BRACKET_CLOSE
+
+statement = while | for | if | function | block | ((assignment | declaration | expression | (RETURN expression?) | BREAK | SKIP) SEMICOLON)
+
+program = statement*
