@@ -487,7 +487,8 @@ type_t * parse_type(token_array_t * tokens, parse_error_t * error) {
             return type;
         
         // pointer to type
-        case REF:; // 'a label can only be part of a statement and a declaration is not a statement' - ☝️🤓
+        case REF:
+            tokens->tokens++;
             // parse sub-type
             type_t * ref_type = parse_type(tokens, error);
             if (!ref_type)
