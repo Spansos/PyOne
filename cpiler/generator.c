@@ -95,7 +95,12 @@ void generate_function(function_t * function, struct lstr * out, const char * co
 
     ls_append_c(out, ':');
 
+    // local defs of r & b
+    ls_append_c(out, '(');
+    ls_append_cstr(out, "r:=R(),b:=0,");
+    // statement
     generate_statement(function->body, out, code);
+    ls_append_c(out, ')');
 
     ls_append_c(out, ')');
 }
