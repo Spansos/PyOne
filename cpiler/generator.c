@@ -102,6 +102,9 @@ void generate_function(function_t * function, struct lstr * out, const char * co
     generate_statement(function->body, out, code);
     ls_append_c(out, ')');
 
+    // return value of body
+    ls_append_cstr(out, "[2][0]");
+
     ls_append_c(out, ')');
 }
 
@@ -186,8 +189,7 @@ void generate_postfix(postfix_t * postfix, struct lstr * out, const char * code)
             }
             ls_append_c(out, ')');
 
-            // expression should evaluate to r[0] && reset r to 0
-            ls_append_cstr(out, ",r,r:=R())[1][0]");
+            ls_append_c(out, ')');
             break;
 
         case INDEX:
@@ -467,7 +469,7 @@ void generate_statement(statement_t * statement, struct lstr * out, const char *
             exit(EXIT_FAILURE);
     }
 
-    ls_append_cstr(out, ",b or r)[1]");
+    ls_append_cstr(out, ",r or b)[1]");
     
     return;
 }
