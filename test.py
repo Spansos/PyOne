@@ -1,1 +1,1 @@
-[0 for i in type("", (), {"__iter__": lambda self: self, "__next__": lambda self: 1})()]
+[iter([]).__next__() for i in type("", (), {"__iter__": lambda self: self, "__next__": lambda self: 1})()]
