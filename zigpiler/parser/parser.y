@@ -17,27 +17,27 @@
 }
 
 // operators*
-%token AND
-%token OR
-%token ASSIGN
-%token EQUALS
-%token NOT_EQUALS
-%token GREATER
-%token LESSER
-%token GREATER_EQUALS
-%token LESSER_EQUALS
-%token PLUS
-%token MINUS
-%token PRODUCT
-%token DIVISION
-%token MODULUS
-%token POWER
-%token NOT
+%token <token> AND
+%token <token> OR
+%token <token> ASSIGN
+%token <token> EQUALS
+%token <token> NOT_EQUALS
+%token <token> GREATER
+%token <token> LESSER
+%token <token> GREATER_EQUALS
+%token <token> LESSER_EQUALS
+%token <token> PLUS
+%token <token> MINUS
+%token <token> PRODUCT
+%token <token> DIVISION
+%token <token> MODULUS
+%token <token> POWER
+%token <token> NOT
 
 // literals
-%token INT
-%token FLOAT
-%token STRING
+%token <token> INT
+%token <token> FLOAT
+%token <token> STRING
 
 // alpha
 %token MUT
@@ -50,7 +50,7 @@
 %token SKIP
 %token FUNCTION
 %token RETURN
-%token IDENTIFIER
+%token <token> IDENTIFIER
 
 // syntax
 %token ARROW
@@ -74,36 +74,39 @@
 %left POWER
 %precedence NOT
 
+// types of non-terminals
+%type <expression> expression
+
 %%
 
-start: statement start
-    | %empty
+start: statement start  { }
+    | %empty            { }
     ;
 
-statement: expression SEMICOLON
-    | SEMICOLON
+statement: expression SEMICOLON { print_expression($1); }
+    | SEMICOLON                 { }
     ;
 
-expression: INT
-    | FLOAT
-    | STRING
-    | IDENTIFIER
-    | expression AND expression
-    | expression OR expression
-    | expression EQUALS expression
-    | expression NOT_EQUALS expression
-    | expression GREATER expression
-    | expression LESSER expression
-    | expression GREATER_EQUALS expression
-    | expression LESSER_EQUALS expression
-    | expression PLUS expression
-    | expression MINUS expression
-    | expression PRODUCT expression
-    | expression DIVISION expression
-    | expression MODULUS expression
-    | expression POWER expression
-    | NOT expression 
-    | BRACKET_OPEN expression BRACKET_CLOSE
+expression: INT                             { $$ = new_value_expression($1); }
+    | FLOAT                                 { $$ = new_value_expression($1); }
+    | STRING                                { $$ = new_value_expression($1); }
+    | IDENTIFIER                            { $$ = new_value_expression($1); }
+    | expression AND expression             { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression OR expression              { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression EQUALS expression          { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression NOT_EQUALS expression      { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression GREATER expression         { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression LESSER expression          { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression GREATER_EQUALS expression  { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression LESSER_EQUALS expression   { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression PLUS expression            { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression MINUS expression           { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression PRODUCT expression         { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression DIVISION expression        { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression MODULUS expression         { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | expression POWER expression           { $$ = new_binary_operator_expression(new_binary_operator($2, $1, $3)); }
+    | NOT expression                        { $$ = new_unary_operator_expression(new_unary_operator($1, $2)); }
+    | BRACKET_OPEN expression BRACKET_CLOSE { $$ = $2; }
     ;
 
 %%

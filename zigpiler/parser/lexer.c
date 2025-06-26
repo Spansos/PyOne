@@ -842,7 +842,7 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 30 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, ASSIGN); return ASSIGN;}
+{return ASSIGN;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
@@ -927,52 +927,52 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 47 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, MUT); return MUT;}
+{return MUT;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 48 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, REF); return REF;}
+{return REF;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 49 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, IF); return IF;}
+{return IF;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 50 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, ELSE); return ELSE;}
+{return ELSE;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 51 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, WHILE); return WHILE;}
+{return WHILE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 52 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, FOR); return FOR;}
+{return FOR;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 53 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, STOP); return STOP;}
+{return STOP;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 54 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, SKIP); return SKIP;}
+{return SKIP;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 55 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, FUNCTION); return FUNCTION;}
+{return FUNCTION;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 56 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, RETURN); return RETURN;}
+{return RETURN;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
@@ -982,47 +982,47 @@ YY_RULE_SETUP
 case 31:
 YY_RULE_SETUP
 #line 58 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, ARROW); return ARROW;}
+{return ARROW;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 59 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, COMMA); return COMMA;}
+{return COMMA;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 60 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, SEMICOLON); return SEMICOLON;}
+{return SEMICOLON;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 61 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, BRACKET_OPEN); return BRACKET_OPEN;}
+{return BRACKET_OPEN;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 62 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, BRACKET_CLOSE); return BRACKET_CLOSE;}
+{return BRACKET_CLOSE;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 63 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, CURLY_BRACKET_OPEN); return CURLY_BRACKET_OPEN;}
+{return CURLY_BRACKET_OPEN;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 64 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, CURLY_BRACKET_CLOSE); return CURLY_BRACKET_CLOSE;}
+{return CURLY_BRACKET_CLOSE;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 65 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, SQR_BRACKET_OPEN); return SQR_BRACKET_OPEN;}
+{return SQR_BRACKET_OPEN;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 66 "lexer.l"
-{yylval.token = new_token(start_line, start_column, yytext, SQR_BRACKET_CLOSE); return SQR_BRACKET_CLOSE;}
+{return SQR_BRACKET_CLOSE;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP

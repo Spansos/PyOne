@@ -53,6 +53,9 @@ token_t lex_single_token(const char * code, size_t start, slice_t * slice) {
         case '}':
             return (token_t){.start=start, .type=CURLY_BRACKET_CLOSE};
 
+        case '@':
+            return (token_t){.start=start, .type=AT};
+
         case '-':
             if (code[start+1] == '>') {
                 if (slice)

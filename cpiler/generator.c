@@ -469,7 +469,7 @@ void generate_statement(statement_t * statement, struct lstr * out, const char *
             exit(EXIT_FAILURE);
     }
 
-    ls_append_cstr(out, ",r or b)[1]");
+    ls_append_cstr(out, ",b or r)[1]");
     
     return;
 }
@@ -477,7 +477,13 @@ void generate_statement(statement_t * statement, struct lstr * out, const char *
 
 char * generate_code(program_t * program, const char * code) {
     struct lstr * out = ls_make_str();
-    // stdlib should be a done
+
+    // botched stdlib & initialization
+    ls_append_cstr(out, "(R:=type('',(),{'__bool__':lambda s:False,'__getitem__':lambda s,i:0}),");
+    ls_append_cstr(out, "L:=type('',(),{'b':0,'__iter__':lambda s:s,'__next__':lambda s:iter(()).__next__()if s.b else s,'__call__':lambda s:setattr(s,'b',1)}),");
+    ls_append_cstr(out, "b:=0,");
+    ls_append_cstr(out, "r:=R(),");
+    ls_append_cstr(out, "___print:=print,");
     
     for (statement_t ** i=program->statements; *i!=NULL; i++) {
         // or between statements
@@ -486,6 +492,8 @@ char * generate_code(program_t * program, const char * code) {
             
         generate_statement(*i, out, code);
     }
+
+    ls_append_c(out, ')');
 
     char * r = strdup(ls_cstr(out));
     ls_free(&out);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdlib.h>
 
 typedef struct {
     const void * pointer;
@@ -12,3 +13,6 @@ typedef struct {
 
 // slice to an array of thingies. array = pointer to array start. count = number of items in array
 #define SLICE_ARRAY(array, count) (slice_t){.pointer=(array), .length=(count)*(sizeof(typeof(*(array))))}
+
+// push an item unto the array
+// #define SLICE_PUSH(slice, item) do {slice.length += sizeof(item); slice->pointer=realloc(slice->pointer, slice.length)} while (0)

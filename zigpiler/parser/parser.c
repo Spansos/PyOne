@@ -538,9 +538,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    79,    79,    80,    83,    84,    87,    88,    89,    90,
-      91,    92,    93,    94,    95,    96,    97,    98,    99,   100,
-     101,   102,   103,   104,   105,   106
+       0,    82,    82,    83,    86,    87,    90,    91,    92,    93,
+      94,    95,    96,    97,    98,    99,   100,   101,   102,   103,
+     104,   105,   106,   107,   108,   109
 };
 #endif
 
@@ -1142,8 +1142,152 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
+  case 2: /* start: statement start  */
+#line 82 "parser.y"
+                        { }
+#line 1149 "parser.c"
+    break;
 
-#line 1147 "parser.c"
+  case 3: /* start: %empty  */
+#line 83 "parser.y"
+                        { }
+#line 1155 "parser.c"
+    break;
+
+  case 4: /* statement: expression SEMICOLON  */
+#line 86 "parser.y"
+                                { print_expression((yyvsp[-1].expression)); }
+#line 1161 "parser.c"
+    break;
+
+  case 5: /* statement: SEMICOLON  */
+#line 87 "parser.y"
+                                { }
+#line 1167 "parser.c"
+    break;
+
+  case 6: /* expression: INT  */
+#line 90 "parser.y"
+                                            { (yyval.expression) = new_value_expression((yyvsp[0].token)); }
+#line 1173 "parser.c"
+    break;
+
+  case 7: /* expression: FLOAT  */
+#line 91 "parser.y"
+                                            { (yyval.expression) = new_value_expression((yyvsp[0].token)); }
+#line 1179 "parser.c"
+    break;
+
+  case 8: /* expression: STRING  */
+#line 92 "parser.y"
+                                            { (yyval.expression) = new_value_expression((yyvsp[0].token)); }
+#line 1185 "parser.c"
+    break;
+
+  case 9: /* expression: IDENTIFIER  */
+#line 93 "parser.y"
+                                            { (yyval.expression) = new_value_expression((yyvsp[0].token)); }
+#line 1191 "parser.c"
+    break;
+
+  case 10: /* expression: expression AND expression  */
+#line 94 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1197 "parser.c"
+    break;
+
+  case 11: /* expression: expression OR expression  */
+#line 95 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1203 "parser.c"
+    break;
+
+  case 12: /* expression: expression EQUALS expression  */
+#line 96 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1209 "parser.c"
+    break;
+
+  case 13: /* expression: expression NOT_EQUALS expression  */
+#line 97 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1215 "parser.c"
+    break;
+
+  case 14: /* expression: expression GREATER expression  */
+#line 98 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1221 "parser.c"
+    break;
+
+  case 15: /* expression: expression LESSER expression  */
+#line 99 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1227 "parser.c"
+    break;
+
+  case 16: /* expression: expression GREATER_EQUALS expression  */
+#line 100 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1233 "parser.c"
+    break;
+
+  case 17: /* expression: expression LESSER_EQUALS expression  */
+#line 101 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1239 "parser.c"
+    break;
+
+  case 18: /* expression: expression PLUS expression  */
+#line 102 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1245 "parser.c"
+    break;
+
+  case 19: /* expression: expression MINUS expression  */
+#line 103 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1251 "parser.c"
+    break;
+
+  case 20: /* expression: expression PRODUCT expression  */
+#line 104 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1257 "parser.c"
+    break;
+
+  case 21: /* expression: expression DIVISION expression  */
+#line 105 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1263 "parser.c"
+    break;
+
+  case 22: /* expression: expression MODULUS expression  */
+#line 106 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1269 "parser.c"
+    break;
+
+  case 23: /* expression: expression POWER expression  */
+#line 107 "parser.y"
+                                            { (yyval.expression) = new_binary_operator_expression(new_binary_operator((yyvsp[-1].token), (yyvsp[-2].expression), (yyvsp[0].expression))); }
+#line 1275 "parser.c"
+    break;
+
+  case 24: /* expression: NOT expression  */
+#line 108 "parser.y"
+                                            { (yyval.expression) = new_unary_operator_expression(new_unary_operator((yyvsp[-1].token), (yyvsp[0].expression))); }
+#line 1281 "parser.c"
+    break;
+
+  case 25: /* expression: BRACKET_OPEN expression BRACKET_CLOSE  */
+#line 109 "parser.y"
+                                            { (yyval.expression) = (yyvsp[-1].expression); }
+#line 1287 "parser.c"
+    break;
+
+
+#line 1291 "parser.c"
 
       default: break;
     }
@@ -1336,7 +1480,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 109 "parser.y"
+#line 112 "parser.y"
 
 
 void yyerror(char const *s) {

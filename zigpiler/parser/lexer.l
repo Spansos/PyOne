@@ -26,7 +26,7 @@ int yycolumn = 1;
 
 "&&"                    {yylval.token = new_token(start_line, start_column, yytext, AND); return AND;}
 "||"                    {yylval.token = new_token(start_line, start_column, yytext, OR); return OR;}
-"="                     {yylval.token = new_token(start_line, start_column, yytext, ASSIGN); return ASSIGN;}
+"="                     {return ASSIGN;}
 "=="                    {yylval.token = new_token(start_line, start_column, yytext, EQUALS); return EQUALS;}
 "!="                    {yylval.token = new_token(start_line, start_column, yytext, NOT_EQUALS); return NOT_EQUALS;}
 ">"                     {yylval.token = new_token(start_line, start_column, yytext, GREATER); return GREATER;}
@@ -43,26 +43,26 @@ int yycolumn = 1;
 [0-9]+                  {yylval.token = new_token(start_line, start_column, yytext, INT); return INT;}
 [0-9]*\.[0-9]+          {yylval.token = new_token(start_line, start_column, yytext, FLOAT); return FLOAT;}
 \"[^"\n]*\"             {yylval.token = new_token(start_line, start_column, yytext, STRING); return STRING;}
-"mut"                   {yylval.token = new_token(start_line, start_column, yytext, MUT); return MUT;}
-"ref"                   {yylval.token = new_token(start_line, start_column, yytext, REF); return REF;}
-"if"                    {yylval.token = new_token(start_line, start_column, yytext, IF); return IF;}
-"else"                  {yylval.token = new_token(start_line, start_column, yytext, ELSE); return ELSE;}
-"while"                 {yylval.token = new_token(start_line, start_column, yytext, WHILE); return WHILE;}
-"for"                   {yylval.token = new_token(start_line, start_column, yytext, FOR); return FOR;}
-"stop"                  {yylval.token = new_token(start_line, start_column, yytext, STOP); return STOP;}
-"skip"                  {yylval.token = new_token(start_line, start_column, yytext, SKIP); return SKIP;}
-"function"              {yylval.token = new_token(start_line, start_column, yytext, FUNCTION); return FUNCTION;}
-"return"                {yylval.token = new_token(start_line, start_column, yytext, RETURN); return RETURN;}
+"mut"                   {return MUT;}
+"ref"                   {return REF;}
+"if"                    {return IF;}
+"else"                  {return ELSE;}
+"while"                 {return WHILE;}
+"for"                   {return FOR;}
+"stop"                  {return STOP;}
+"skip"                  {return SKIP;}
+"function"              {return FUNCTION;}
+"return"                {return RETURN;}
 [a-zA-Z_][0-9a-zA-Z_]*  {yylval.token = new_token(start_line, start_column, yytext, IDENTIFIER); return IDENTIFIER;}
-"->"                    {yylval.token = new_token(start_line, start_column, yytext, ARROW); return ARROW;}
-","                     {yylval.token = new_token(start_line, start_column, yytext, COMMA); return COMMA;}
-";"                     {yylval.token = new_token(start_line, start_column, yytext, SEMICOLON); return SEMICOLON;}
-"("                     {yylval.token = new_token(start_line, start_column, yytext, BRACKET_OPEN); return BRACKET_OPEN;}
-")"                     {yylval.token = new_token(start_line, start_column, yytext, BRACKET_CLOSE); return BRACKET_CLOSE;}
-"{"                     {yylval.token = new_token(start_line, start_column, yytext, CURLY_BRACKET_OPEN); return CURLY_BRACKET_OPEN;}
-"}"                     {yylval.token = new_token(start_line, start_column, yytext, CURLY_BRACKET_CLOSE); return CURLY_BRACKET_CLOSE;}
-"["                     {yylval.token = new_token(start_line, start_column, yytext, SQR_BRACKET_OPEN); return SQR_BRACKET_OPEN;}
-"]"                     {yylval.token = new_token(start_line, start_column, yytext, SQR_BRACKET_CLOSE); return SQR_BRACKET_CLOSE;}
+"->"                    {return ARROW;}
+","                     {return COMMA;}
+";"                     {return SEMICOLON;}
+"("                     {return BRACKET_OPEN;}
+")"                     {return BRACKET_CLOSE;}
+"{"                     {return CURLY_BRACKET_OPEN;}
+"}"                     {return CURLY_BRACKET_CLOSE;}
+"["                     {return SQR_BRACKET_OPEN;}
+"]"                     {return SQR_BRACKET_CLOSE;}
 [\t ]                   {;}
 \n                      {;}
 "//"[^\n]*              {;}
