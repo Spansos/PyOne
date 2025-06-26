@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_PARSER_TAB_H_INCLUDED
-# define YY_YY_PARSER_TAB_H_INCLUDED
+#ifndef YY_YY_PARSER_H_INCLUDED
+# define YY_YY_PARSER_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -92,15 +92,26 @@ extern int yydebug;
     CURLY_BRACKET_OPEN = 293,      /* CURLY_BRACKET_OPEN  */
     CURLY_BRACKET_CLOSE = 294,     /* CURLY_BRACKET_CLOSE  */
     SQR_BRACKET_OPEN = 295,        /* SQR_BRACKET_OPEN  */
-    SQR_BRACKET_CLOSE = 296,       /* SQR_BRACKET_CLOSE  */
-    UNKNOWN = 297                  /* UNKNOWN  */
+    SQR_BRACKET_CLOSE = 296        /* SQR_BRACKET_CLOSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 12 "parser.y"
+
+    struct token * token;
+    struct binary_operator * binary_operator;
+    struct unary_operator * unary_operator;
+    struct expression * expression;
+
+#line 112 "parser.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -112,4 +123,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_H_INCLUDED  */

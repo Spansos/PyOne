@@ -70,11 +70,12 @@
 #line 1 "parser.y"
 
     #include <stdio.h>
+    #include "parsetree.h"
 
-    int yylex(void);
+    int yylex();
     void yyerror(char const *s);
 
-#line 78 "parser.tab.c"
+#line 79 "parser.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -97,7 +98,7 @@
 #  endif
 # endif
 
-#include "parser.tab.h"
+#include "parser.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -144,11 +145,10 @@ enum yysymbol_kind_t
   YYSYMBOL_CURLY_BRACKET_CLOSE = 39,       /* CURLY_BRACKET_CLOSE  */
   YYSYMBOL_SQR_BRACKET_OPEN = 40,          /* SQR_BRACKET_OPEN  */
   YYSYMBOL_SQR_BRACKET_CLOSE = 41,         /* SQR_BRACKET_CLOSE  */
-  YYSYMBOL_UNKNOWN = 42,                   /* UNKNOWN  */
-  YYSYMBOL_YYACCEPT = 43,                  /* $accept  */
-  YYSYMBOL_start = 44,                     /* start  */
-  YYSYMBOL_statement = 45,                 /* statement  */
-  YYSYMBOL_expression = 46                 /* expression  */
+  YYSYMBOL_YYACCEPT = 42,                  /* $accept  */
+  YYSYMBOL_start = 43,                     /* start  */
+  YYSYMBOL_statement = 44,                 /* statement  */
+  YYSYMBOL_expression = 45                 /* expression  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -479,7 +479,7 @@ union yyalloc
 #define YYLAST   120
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  43
+#define YYNTOKENS  42
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
@@ -488,7 +488,7 @@ union yyalloc
 #define YYNSTATES  45
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   297
+#define YYMAXUTOK   296
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -531,16 +531,16 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42
+      35,    36,    37,    38,    39,    40,    41
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    70,    70,    71,    74,    75,    78,    79,    80,    81,
-      82,    83,    84,    85,    86,    87,    88,    89,    90,    91,
-      92,    93,    94,    95,    96,    97
+       0,    79,    79,    80,    83,    84,    87,    88,    89,    90,
+      91,    92,    93,    94,    95,    96,    97,    98,    99,   100,
+     101,   102,   103,   104,   105,   106
 };
 #endif
 
@@ -563,8 +563,7 @@ static const char *const yytname[] =
   "WHILE", "FOR", "STOP", "SKIP", "FUNCTION", "RETURN", "IDENTIFIER",
   "ARROW", "COMMA", "SEMICOLON", "BRACKET_OPEN", "BRACKET_CLOSE",
   "CURLY_BRACKET_OPEN", "CURLY_BRACKET_CLOSE", "SQR_BRACKET_OPEN",
-  "SQR_BRACKET_CLOSE", "UNKNOWN", "$accept", "start", "statement",
-  "expression", YY_NULLPTR
+  "SQR_BRACKET_CLOSE", "$accept", "start", "statement", "expression", YY_NULLPTR
 };
 
 static const char *
@@ -660,19 +659,19 @@ static const yytype_int8 yycheck[] =
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    18,    19,    20,    21,    32,    35,    36,    44,    45,
-      46,    46,    46,     0,    44,     3,     4,     6,     7,     8,
+       0,    18,    19,    20,    21,    32,    35,    36,    43,    44,
+      45,    45,    45,     0,    43,     3,     4,     6,     7,     8,
        9,    10,    11,    12,    13,    14,    15,    16,    17,    35,
-      37,    46,    46,    46,    46,    46,    46,    46,    46,    46,
-      46,    46,    46,    46,    46
+      37,    45,    45,    45,    45,    45,    45,    45,    45,    45,
+      45,    45,    45,    45,    45
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    43,    44,    44,    45,    45,    46,    46,    46,    46,
-      46,    46,    46,    46,    46,    46,    46,    46,    46,    46,
-      46,    46,    46,    46,    46,    46
+       0,    42,    43,    43,    44,    44,    45,    45,    45,    45,
+      45,    45,    45,    45,    45,    45,    45,    45,    45,    45,
+      45,    45,    45,    45,    45,    45
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1144,7 +1143,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1148 "parser.tab.c"
+#line 1147 "parser.c"
 
       default: break;
     }
@@ -1337,7 +1336,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 100 "parser.y"
+#line 109 "parser.y"
 
 
 void yyerror(char const *s) {

@@ -1,9 +1,20 @@
 %{
     #include <stdio.h>
+    #include "parsetree.h"
 
-    int yylex(void);
+    int yylex();
     void yyerror(char const *s);
 %}
+
+%output "parser.c"
+%header "parser.h"
+
+%union {
+    struct token * token;
+    struct binary_operator * binary_operator;
+    struct unary_operator * unary_operator;
+    struct expression * expression;
+}
 
 // operators*
 %token AND
@@ -52,8 +63,6 @@
 %token SQR_BRACKET_OPEN
 %token SQR_BRACKET_CLOSE
 
-// error
-%token UNKNOWN
 
 // operator precedence & shit
 %left AND OR
